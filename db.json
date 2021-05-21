@@ -1,0 +1,71 @@
+{
+    "tournament": {},
+    "player": {
+        "1": {
+            "first_name": "Jeremy",
+            "last_name": "Bochard",
+            "date_of_birth": "1991/07/09",
+            "gender": "Male",
+            "ranking": 8,
+            "score": 0
+        },
+        "2": {
+            "first_name": "Adrien",
+            "last_name": "Martin",
+            "date_of_birth": "1992/01/08",
+            "gender": "Male",
+            "ranking": 10,
+            "score": 0
+        },
+        "3": {
+            "first_name": "Estelle",
+            "last_name": "Guerin",
+            "date_of_birth": "1993/02/07",
+            "gender": "Female",
+            "ranking": 145,
+            "score": 0
+        },
+        "4": {
+            "first_name": "Phillipe",
+            "last_name": "Boulot",
+            "date_of_birth": "1994/03/06",
+            "gender": "Male",
+            "ranking": 13,
+            "score": 0
+        },
+        "5": {
+            "first_name": "Sophie",
+            "last_name": "Durand",
+            "date_of_birth": "1995/04/05",
+            "gender": "Female",
+            "ranking": 2,
+            "score": 0
+        },
+        "6": {
+            "first_name": "Gustave",
+            "last_name": "Dupond",
+            "date_of_birth": "1995/05/04",
+            "gender": "Male",
+            "ranking": 87,
+            "score": 0
+        },
+        "7": {
+            "first_name": "Marc",
+            "last_name": "Thion",
+            "date_of_birth": "1997/06/10",
+            "gender": "Male",
+            "ranking": 14,
+            "score": 0
+        },
+        "8": {
+            "first_name": "Jacob",
+            "last_name": "Diniz",
+            "date_of_birth": "1998/07/23",
+            "gender": "Male",
+            "ranking": 1,
+            "score": 0
+        }
+    },
+    "match": {},
+    "round": {}
+}
