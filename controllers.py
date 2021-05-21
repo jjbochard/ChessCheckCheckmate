@@ -40,7 +40,7 @@ class Controller:
         elif response == "8":
             return self.quit
         elif response == "9":
-            return self.testtest
+            return self.write_score()
 
     def display_tournaments_menu(self):
         """ """
@@ -255,7 +255,6 @@ class Controller:
         serialized_round = vars(new_round)
         round_table.insert(serialized_round)
         new_round_id = round_table.all()[-1].doc_id
-        print(new_round_id)
         return new_round_id
 
     def choice_player_for_add_player_to_a_tournament(self):
@@ -272,10 +271,15 @@ class Controller:
         new_matchs_id = []
         new_rounds_id = []
         for player in tournament_table.all()[-1]["players"]:
-            list_ranking_player.append((player_table.get(doc_id=player))["ranking"])
+            list_ranking_player.append((player_table.get(doc_id=player)))
         list_of_players_by_ranking = Player.make_list_of_players_by_ranking(
             self, list_ranking_player
         )
+        for player in list_of_players_by_ranking[0]:
+            print(player["ranking"])
+        for player in list_of_players_by_ranking[1]:
+            print(player["ranking"])
+
         Play = Query()
         for i in range(
             int(
@@ -291,10 +295,10 @@ class Controller:
         ):
             new_match = Match(
                 player_table.get(
-                    Play.ranking == list_of_players_by_ranking[0][i]
+                    Play.ranking == list_of_players_by_ranking[0][i]["ranking"]
                 ).doc_id,
                 player_table.get(
-                    Play.ranking == list_of_players_by_ranking[1][i]
+                    Play.ranking == list_of_players_by_ranking[1][i]["ranking"]
                 ).doc_id,
             )
             serialized_match = vars(new_match)
@@ -322,13 +326,11 @@ class Controller:
         round_table = db.table("round")
         list_score_player = []
         new_matchs_id = []
-        new_rounds_id = []
         for player in tournament_table.all()[-1]["players"]:
-            list_score_player.append((player_table.get(doc_id=player))["score"])
+            list_score_player.append((player_table.get(doc_id=player)))
         list_of_players_by_score = Player.make_list_of_players_by_score(
             self, list_score_player
         )
-        print(list_of_players_by_score)
         all_matchs = []
         for rounds in tournament_table.all()[-1]["rounds"]:
             for matchs in round_table.all()[rounds - 1]["list_of_match"]:
@@ -353,38 +355,40 @@ class Controller:
             )
         ):
             for match in all_matchs:
-                print("match")
-                print(match)
+                print("i : " + str(i))
                 print(
                     player_table.get(
-                        Play.score == list_of_players_by_score[0][i]
+                        Play.ranking == list_of_players_by_score[0][i]["ranking"]
                     ).doc_id
                 )
                 print(
                     player_table.get(
-                        Play.score == list_of_players_by_score[1][i]
+                        Play.ranking == list_of_players_by_score[1][i]["ranking"]
                     ).doc_id
                 )
 
                 if collections.Counter(match) == collections.Counter(
                     [
                         player_table.get(
-                            Play.score == list_of_players_by_score[0][i]
+                            Play.ranking == list_of_players_by_score[0][i]["ranking"]
                         ).doc_id,
                         player_table.get(
-                            Play.score == list_of_players_by_score[1][i]
+                            Play.ranking == list_of_players_by_score[1][i]["ranking"]
                         ).doc_id,
                     ]
                 ):
                     print("Same opponent")
                     new_match = Match(
                         player_table.get(
-                            Play.score == list_of_players_by_score[0][i]
+                            Play.ranking == list_of_players_by_score[0][i]["ranking"]
                         ).doc_id,
                         player_table.get(
-                            Play.score == list_of_players_by_score[1][i + 1]
+                            Play.ranking
+                            == list_of_players_by_score[1][i + 1]["ranking"]
                         ).doc_id,
                     )
+                    for player in list_of_players_by_score:
+                        print(player)
                     (
                         list_of_players_by_score[0][i],
                         list_of_players_by_score[0][i + 1],
@@ -392,13 +396,15 @@ class Controller:
                         list_of_players_by_score[0][i + 1],
                         list_of_players_by_score[0][i],
                     )
+                    for player in list_of_players_by_score:
+                        print(player)
                 else:
                     new_match = Match(
                         player_table.get(
-                            Play.score == list_of_players_by_score[0][i]
+                            Play.ranking == list_of_players_by_score[0][i]["ranking"]
                         ).doc_id,
                         player_table.get(
-                            Play.score == list_of_players_by_score[1][i]
+                            Play.ranking == list_of_players_by_score[1][i]["ranking"]
                         ).doc_id,
                     )
 
@@ -406,8 +412,7 @@ class Controller:
             match_table.insert(serialized_match)
             new_matchs_id.append(match_table.all()[-1].doc_id)
         new_round_id = self.create_round()
-        new_rounds_id.append(new_round_id)
-
+        print(new_round_id)
         round_table.update(
             {"list_of_match": new_matchs_id},
             doc_ids=[round_table.all()[-1].doc_id],
@@ -421,8 +426,12 @@ class Controller:
             doc_ids=[round_table.all()[-1].doc_id],
         )
 
+        old_list_of_round = tournament_table.all()[-1]["rounds"]
+        print(old_list_of_round)
+        old_list_of_round.append(new_round_id)
+        print(old_list_of_round)
         tournament_table.update(
-            {"rounds": tournament_table.all()[-1]["rounds"].append(new_rounds_id)},
+            {"rounds": old_list_of_round},
             doc_ids=[tournament_table.all()[-1].doc_id],
         )
         self.view.display_message_other_round_create(
@@ -445,10 +454,9 @@ class Controller:
             j += 1
         for match in matchs_to_write_score:
             update_match = matchs_to_write_score[index]
-            print(player_table.all()[update_match["match"][0][0] - 1]["score"])
             update_match["match"][0][1] = player_table.all()[
                 update_match["match"][0][0] - 1
-            ]["score"] + int(
+            ]["score"] + float(
                 input(
                     "Enter the score of the player number "
                     + str(update_match["match"][0][0])
@@ -457,7 +465,7 @@ class Controller:
             )
             update_match["match"][1][1] = player_table.all()[
                 update_match["match"][1][0] - 1
-            ]["score"] + int(
+            ]["score"] + float(
                 input(
                     "Enter the score of the player number "
                     + str(update_match["match"][1][0])
@@ -486,3 +494,4 @@ class Controller:
             {"end_date": json.dumps(datetime.now(), default=str)},
             doc_ids=[round_table.all()[-1].doc_id],
         )
+        self.view.display_players_by_score()

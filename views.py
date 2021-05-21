@@ -301,6 +301,37 @@ class View:
             )
         )
 
+    def display_players_by_score(self):
+        """ """
+        db = TinyDB("db.json")
+        player_table = db.table("player")
+        players = []
+        for player in player_table:
+            players.append(
+                [
+                    player.doc_id,
+                    player["score"],
+                    player["last_name"],
+                    player["first_name"],
+                    player["date_of_birth"],
+                    player["gender"],
+                ]
+            )
+        players = sorted(players, key=lambda player: player[1], reverse=True)
+        print(
+            tabulate(
+                players,
+                headers=[
+                    "Id",
+                    "Score",
+                    "First name",
+                    "Last name",
+                    "Date of birth",
+                    "Gender",
+                ],
+            )
+        )
+
     def display_choice_add_players_create_tournament(self):
         menu_choice = input("\n  1 - Add existed players\n" "  2 - Add a new player\n")
         return menu_choice

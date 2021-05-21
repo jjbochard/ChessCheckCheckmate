@@ -39,8 +39,6 @@ class Tournament:
     def create_first_round(self):
         for player in self.players:
             print(int(player[0]))
-            # player = int(player[0])
-        print(self.players)
         self.players = sorted(self.players, key=lambda player: player.ranking)
 
 
@@ -63,10 +61,12 @@ class Player:
         return Player(first_name, last_name, date_of_birth, gender, ranking)
 
     def sort_player_by_ranking(self, list):
-        return sorted(list)
+        return sorted(list, key=lambda player: player["ranking"])
 
     def sort_player_by_score(self, list):
-        return sorted(list, reverse=True)
+        return sorted(
+            list, key=lambda player: (player["score"], -player["ranking"]), reverse=True
+        )
 
     def make_list_of_players_by_ranking(self, list):
         sort_list_of_players = []
@@ -98,10 +98,6 @@ class Player:
 class Match:
     def __init__(self, player_1, player_2, score_player_1=0, score_player_2=0):
         self.match = ([player_1, score_player_1], [player_2, score_player_2])
-        # self.player_1 = player_1
-        # self.player_2 = player_2
-        # self.score_player_1 = score_player_1
-        # self.score_player_2 = score_player_2
 
 
 class Round:
