@@ -87,6 +87,7 @@ class View:
                     "Date of birth",
                     "Gender",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -99,22 +100,100 @@ class View:
     def display_rounds_for_a_tournament(self, choice_tournament):
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
+        player_table = db.table("player")
         round_table = db.table("round")
+        match_table = db.table("match")
         chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
         rounds_for_a_tournament = []
-        for rounds in chooses_tournament["rounds"]:
-            rounds_for_a_tournament.append(round_table.all()[rounds - 1])
+        matchs_for_a_tournament = []
+        for round in chooses_tournament["rounds"]:
+            rounds_for_a_tournament.append(round_table.all()[round - 1])
+            for match in round_table.all()[round - 1]["list_of_match"]:
+                matchs_for_a_tournament.append(match_table.all()[match - 1])
+
         rounds_for_a_tournament_for_print = []
+        i = 0
         for round in rounds_for_a_tournament:
             rounds_for_a_tournament_for_print.append(
                 [
                     round["name"],
                     round["start_date"],
                     round["end_date"],
-                    round["list_of_match"],
                 ]
             )
-        rounds_for_a_tournament_for_print = sorted(rounds_for_a_tournament_for_print)
+            matchs_of_round = []
+            for match in round["list_of_match"]:
+                if (
+                    matchs_for_a_tournament[match - 1]["match"][0][1] == 1.0
+                    and matchs_for_a_tournament[match - 1]["match"][1][1] == 0.0
+                ):
+                    matchs_of_round.append(
+                        player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["last_name"]
+                        + " won against "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["last_name"]
+                        + "\n",
+                    )
+                elif (
+                    matchs_for_a_tournament[match - 1]["match"][0][1] == 0.0
+                    and matchs_for_a_tournament[match - 1]["match"][1][1] == 1.0
+                ):
+                    matchs_of_round.append(
+                        player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["last_name"]
+                        + " won against "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["last_name"]
+                        + "\n",
+                    )
+                elif (
+                    matchs_for_a_tournament[match - 1]["match"][0][1] == 0.5
+                    and matchs_for_a_tournament[match - 1]["match"][1][1] == 0.5
+                ):
+                    matchs_of_round.append(
+                        player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
+                        )["last_name"]
+                        + " and "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["first_name"]
+                        + " "
+                        + player_table.get(
+                            doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
+                        )["last_name"]
+                        + " drew\n",
+                    )
+            matchs = "".join(matchs_of_round)
+            rounds_for_a_tournament_for_print[i].append(matchs)
+            i += 1
+
+        # rounds_for_a_tournament_for_print = sorted(rounds_for_a_tournament_for_print)
         print(
             tabulate(
                 rounds_for_a_tournament_for_print,
@@ -122,8 +201,9 @@ class View:
                     "Name",
                     "Start date",
                     "End date",
-                    "List of match",
+                    "Match",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -136,6 +216,7 @@ class View:
     def display_matchs_for_a_tournament(self, choice_tournament):
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
+        player_table = db.table("player")
         round_table = db.table("round")
         match_table = db.table("match")
         chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
@@ -143,20 +224,54 @@ class View:
         for round in chooses_tournament["rounds"]:
             for match in round_table.all()[round - 1]["list_of_match"]:
                 matchs_for_a_tournament.append(match_table.all()[match - 1])
-        matchs_for_a_tournament_for_print = []
+        matchs_for_a_tournament_to_print = []
         for match in matchs_for_a_tournament:
-            matchs_for_a_tournament_for_print.append(
-                [match.doc_id, match["match"][0][0], match["match"][1][0]]
-            )
-        matchs_for_a_tournament_for_print = sorted(matchs_for_a_tournament_for_print)
+            if match["match"][0][1] == 1.0 and match["match"][1][1] == 0.0:
+                matchs_for_a_tournament_to_print.append(
+                    [
+                        match.doc_id,
+                        player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][0][0])["last_name"]
+                        + " won against "
+                        + player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][1][0])["last_name"],
+                    ]
+                )
+            elif match["match"][0][1] == 0.0 and match["match"][1][1] == 1.0:
+                matchs_for_a_tournament_to_print.append(
+                    [
+                        match.doc_id,
+                        player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][1][0])["last_name"]
+                        + " won against "
+                        + player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][0][0])["last_name"],
+                    ]
+                )
+            elif match["match"][0][1] == 0.5 and match["match"][1][1] == 0.5:
+                matchs_for_a_tournament_to_print.append(
+                    [
+                        match.doc_id,
+                        player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][1][0])["last_name"]
+                        + " and "
+                        + player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        + " "
+                        + player_table.get(doc_id=match["match"][0][0])["last_name"]
+                        + " drew",
+                    ]
+                )
+
         print(
             tabulate(
-                matchs_for_a_tournament_for_print,
-                headers=[
-                    "Id",
-                    "Player 1",
-                    "Player 2",
-                ],
+                matchs_for_a_tournament_to_print,
+                headers=["Id", "Match"],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -201,6 +316,7 @@ class View:
                     "Time control",
                     "Description",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -230,6 +346,7 @@ class View:
                     "Date of birth",
                     "Gender",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -269,6 +386,7 @@ class View:
                     "Date of birth",
                     "Gender",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -298,6 +416,7 @@ class View:
                     "Date of birth",
                     "Gender",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
@@ -311,24 +430,29 @@ class View:
                 [
                     player.doc_id,
                     player["score"],
+                    player["ranking"],
                     player["last_name"],
                     player["first_name"],
                     player["date_of_birth"],
                     player["gender"],
                 ]
             )
-        players = sorted(players, key=lambda player: player[1], reverse=True)
+        players = sorted(
+            players, key=lambda player: (player[1], -player[2]), reverse=True
+        )
         print(
             tabulate(
                 players,
                 headers=[
                     "Id",
                     "Score",
+                    "Ranking",
                     "First name",
                     "Last name",
                     "Date of birth",
                     "Gender",
                 ],
+                tablefmt="fancy_grid",
             )
         )
 
