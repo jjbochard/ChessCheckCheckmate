@@ -40,7 +40,7 @@ class Controller:
         elif response == "8":
             return self.quit
         elif response == "9":
-            return self.write_score()
+            return self.create_other_round
 
     def display_tournaments_menu(self):
         """ """
@@ -336,6 +336,7 @@ class Controller:
                     ]
                 )
         Play = Query()
+        print(all_matchs)
         for i in range(
             int(
                 (
@@ -359,22 +360,29 @@ class Controller:
                         ).doc_id,
                     ]
                 ):
+                    print("same opponent")
+                    for player in list_of_players_by_score[1]:
+                        print(player["ranking"])
+
+                    (
+                        list_of_players_by_score[1][i],
+                        list_of_players_by_score[1][i + 1],
+                    ) = (
+                        list_of_players_by_score[1][i + 1],
+                        list_of_players_by_score[1][i],
+                    )
+                    for player in list_of_players_by_score[1]:
+                        print(player["ranking"])
+
                     new_match = Match(
                         player_table.get(
                             Play.ranking == list_of_players_by_score[0][i]["ranking"]
                         ).doc_id,
                         player_table.get(
-                            Play.ranking
-                            == list_of_players_by_score[1][i + 1]["ranking"]
+                            Play.ranking == list_of_players_by_score[1][i]["ranking"]
                         ).doc_id,
                     )
-                    (
-                        list_of_players_by_score[0][i],
-                        list_of_players_by_score[0][i + 1],
-                    ) = (
-                        list_of_players_by_score[0][i + 1],
-                        list_of_players_by_score[0][i],
-                    )
+
                 else:
                     new_match = Match(
                         player_table.get(
@@ -412,6 +420,9 @@ class Controller:
             str(round_table.all()[-1]["current_round"])
         )
         self.write_score()
+        print(round_table.all()[-1]["current_round"])
+        if round_table.all()[-1]["current_round"] == 4:
+            self.create_end_date_tournament()
 
     def write_score(self):
         db = TinyDB("db.json")
@@ -473,3 +484,15 @@ class Controller:
             doc_ids=[round_table.all()[-1].doc_id],
         )
         self.view.display_players_by_score()
+
+    def create_end_date_tournament(self):
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
+        tournament_table.update(
+            {
+                "end_date": json.dumps(
+                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
+                )
+            },
+            doc_ids=[tournament_table.all()[-1].doc_id],
+        )

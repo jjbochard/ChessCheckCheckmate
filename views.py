@@ -423,18 +423,19 @@ class View:
     def display_players_by_score(self):
         """ """
         db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
         player_table = db.table("player")
         players = []
-        for player in player_table:
+        for player in tournament_table.all()[-1]["players"]:
             players.append(
                 [
-                    player.doc_id,
-                    player["score"],
-                    player["ranking"],
-                    player["last_name"],
-                    player["first_name"],
-                    player["date_of_birth"],
-                    player["gender"],
+                    player_table.all()[player - 1].doc_id,
+                    player_table.all()[player - 1]["score"],
+                    player_table.all()[player - 1]["ranking"],
+                    player_table.all()[player - 1]["last_name"],
+                    player_table.all()[player - 1]["first_name"],
+                    player_table.all()[player - 1]["date_of_birth"],
+                    player_table.all()[player - 1]["gender"],
                 ]
             )
         players = sorted(

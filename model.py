@@ -7,10 +7,10 @@ class Tournament:
         self,
         name,
         place,
-        start_date,
-        end_date,
         time_control,
         description,
+        start_date=json.dumps(datetime.now().strftime("%d/%m/%Y %H:%M:%S")),
+        end_date=None,
         rounds=[],
         players=[],
         nb_of_rounds=4,
@@ -30,11 +30,9 @@ class Tournament:
     def create_tournament(cls):
         name = input("Name: ")
         place = input("Place: ")
-        start_date = input("Start date: ")
-        end_date = input("End date: ")
         time_control = input("Time control: ")
         description = input("Description ")
-        return Tournament(name, place, start_date, end_date, time_control, description)
+        return Tournament(name, place, time_control, description)
 
     def create_first_round(self):
         for player in self.players:
