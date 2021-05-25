@@ -40,7 +40,7 @@ class Controller:
         elif response == "8":
             return self.quit
         elif response == "9":
-            return self.create_other_round
+            return self.display_players_menu
 
     def display_tournaments_menu(self):
         """ """

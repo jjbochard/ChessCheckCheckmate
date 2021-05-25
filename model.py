@@ -31,7 +31,7 @@ class Tournament:
         name = input("Name: ")
         place = input("Place: ")
         time_control = input("Time control: ")
-        description = input("Description ")
+        description = input("Description: ")
         return Tournament(name, place, time_control, description)
 
     def create_first_round(self):

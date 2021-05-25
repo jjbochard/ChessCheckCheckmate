@@ -401,6 +401,7 @@ class View:
                     player.doc_id,
                     player["last_name"],
                     player["first_name"],
+                    player["ranking"],
                     player["date_of_birth"],
                     player["gender"],
                 ]
@@ -413,6 +414,7 @@ class View:
                     "Id",
                     "First name",
                     "Last name",
+                    "Ranking",
                     "Date of birth",
                     "Gender",
                 ],
