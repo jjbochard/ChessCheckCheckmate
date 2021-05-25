@@ -19,7 +19,7 @@ class View:
             "\n"
             "\nWhat do you want to do :\n"
             "  1 - Start a tournament\n"
-            # "  2 - Add a player\n"
+            "  2 - Add a player\n"
             # "  3 - Show ranking\n"
             # "  4 - Change ranking\n"
             "  5 - Display tournaments\n"

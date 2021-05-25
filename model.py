@@ -9,6 +9,7 @@ class Tournament:
         place,
         time_control,
         description,
+        state_tournament,
         start_date=json.dumps(datetime.now().strftime("%d/%m/%Y %H:%M:%S")),
         end_date=None,
         rounds=[],
@@ -25,6 +26,7 @@ class Tournament:
         self.rounds = rounds
         self.players = players
         self.nb_of_rounds = nb_of_rounds
+        self.state_tournament = state_tournament
 
     @classmethod
     def create_tournament(cls):
@@ -32,7 +34,8 @@ class Tournament:
         place = input("Place: ")
         time_control = input("Time control: ")
         description = input("Description: ")
-        return Tournament(name, place, time_control, description)
+        state_tournament = "active"
+        return Tournament(name, place, time_control, description, state_tournament)
 
     def create_first_round(self):
         for player in self.players:

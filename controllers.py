@@ -33,6 +33,8 @@ class Controller:
                 break
         if response == "1":
             return self.create_tournament
+        elif response == "2":
+            return self.create_player
         elif response == "5":
             return self.display_tournaments_menu
         elif response == "6":
@@ -241,12 +243,20 @@ class Controller:
 
     def create_player(self):
         db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
         player_table = db.table("player")
         new_player = Player.create_player()
         serialized_player = vars(new_player)
         player_table.insert(serialized_player)
         new_player_id = player_table.all()[-1].doc_id
-        return new_player_id
+        print(tournament_table.all())
+        if (
+            tournament_table.all()[-1]["state_tournament"] == "finished"
+            or not tournament_table.all()
+        ):
+            return self.welcome_menu
+        else:
+            return new_player_id
 
     def create_round(self):
         db = TinyDB("db.json")
@@ -422,7 +432,7 @@ class Controller:
         self.write_score()
         print(round_table.all()[-1]["current_round"])
         if round_table.all()[-1]["current_round"] == 4:
-            self.create_end_date_tournament()
+            self.create_end_tournament()
 
     def write_score(self):
         db = TinyDB("db.json")
@@ -485,7 +495,7 @@ class Controller:
         )
         self.view.display_players_by_score()
 
-    def create_end_date_tournament(self):
+    def create_end_tournament(self):
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
         tournament_table.update(
@@ -494,5 +504,9 @@ class Controller:
                     datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
                 )
             },
+            doc_ids=[tournament_table.all()[-1].doc_id],
+        )
+        tournament_table.update(
+            {"state_tournament": "finished"},
             doc_ids=[tournament_table.all()[-1].doc_id],
         )
