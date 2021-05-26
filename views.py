@@ -6,7 +6,7 @@ class View:
     def welcome_message(self):
         """ """
         welcome_message = print(
-            "\n" "====================\n" "\n" "Welcome to Ultimate Chess Manage" "\n"
+            "\n" "====================\n" "\n" "Welcome to Ultimate Chess Manager" "\n"
         )
 
         return welcome_message
@@ -19,14 +19,12 @@ class View:
             "\n"
             "\nWhat do you want to do :\n"
             "  1 - Start a tournament\n"
-            "  2 - Add a player\n"
-            # "  3 - Show ranking\n"
-            # "  4 - Change ranking\n"
-            "  5 - Display tournaments\n"
-            "  6 - Display players\n"
-            # "  7 - Show ranking\n"
-            "  8 - Quit\n"
-            "  9 - Test\n"
+            "  2 - Create a player\n"
+            "  3 - Change ranking\n"
+            "  4 - Display tournaments\n"
+            "  5 - Display players\n"
+            "  6 - Quit\n"
+            "  7 - Test\n"
         )
 
         return menu_choice
@@ -39,8 +37,9 @@ class View:
             "  1 - Display players of a tournament\n"
             "  2 - Display rounds of a tournament\n"
             "  3 - Display matchs of a tournament\n"
-            "  4 - Go to main menu\n"
-            "  5 - Quit\n"
+            "  4 - Change ranking\n"
+            "  5 - Go to main menu\n"
+            "  6 - Quit\n"
         )
 
         return menu_choice
@@ -193,7 +192,6 @@ class View:
             rounds_for_a_tournament_for_print[i].append(matchs)
             i += 1
 
-        # rounds_for_a_tournament_for_print = sorted(rounds_for_a_tournament_for_print)
         print(
             tabulate(
                 rounds_for_a_tournament_for_print,
@@ -275,14 +273,34 @@ class View:
             )
         )
 
+    def display_ranking_menu(self):
+        """ """
+        # print("")
+        menu_choice = input(
+            "=========="
+            "\n"
+            "\nWhat do you want to do :\n"
+            "  1 - Change ranking\n"
+            "  2 - Go to main menu\n"
+        )
+
+        return menu_choice
+
+    def choice_player_to_change_ranking(self):
+        choice_player = input(
+            "For which player do you want to change ranking : (choose an id)\n"
+        )
+        return choice_player
+
     def display_players_menu(self):
         """ """
         # print("")
         menu_choice = input(
-            "  1 - Display players by rank\n"
+            "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
-            "  3 - Go to main menu\n"
-            "  4 - Quit\n"
+            "  3 - Change ranking\n"
+            "  4 - Go to main menu\n"
+            "  5 - Quit\n"
         )
 
         return menu_choice
@@ -329,6 +347,7 @@ class View:
             players.append(
                 [
                     player["ranking"],
+                    player.doc_id,
                     player["last_name"],
                     player["first_name"],
                     player["date_of_birth"],
@@ -341,6 +360,7 @@ class View:
                 players,
                 headers=[
                     "Ranking",
+                    "Id",
                     "First name",
                     "Last name",
                     "Date of birth",
@@ -355,8 +375,9 @@ class View:
         # print("")
         menu_choice = input(
             "  1 - Display players by alphabetical order\n"
-            "  2 - Go to main menu\n"
-            "  3 - Quit\n"
+            "  2 - Change ranking\n"
+            "  3 - Go to main menu\n"
+            "  4 - Quit\n"
         )
         return menu_choice
 
@@ -368,6 +389,7 @@ class View:
         for player in player_table:
             players.append(
                 [
+                    player.doc_id,
                     player["last_name"],
                     player["first_name"],
                     player["ranking"],
@@ -375,11 +397,12 @@ class View:
                     player["gender"],
                 ]
             )
-        players = sorted(players)
+        players = sorted(players, key=lambda k: (k[1], k[2]))
         print(
             tabulate(
                 players,
                 headers=[
+                    "Id",
                     "First name",
                     "Last name",
                     "Ranking",
@@ -389,6 +412,18 @@ class View:
                 tablefmt="fancy_grid",
             )
         )
+
+    def display_players_by_alphabetical_order_menu(self):
+        """ """
+        # print("")
+        menu_choice = input(
+            "  1 - Display players by ranking\n"
+            "  2 - Change ranking\n"
+            "  3 - Go to main menu\n"
+            "  4 - Quit\n"
+        )
+
+        return menu_choice
 
     def display_players_by_id(self):
         """ """
@@ -460,13 +495,10 @@ class View:
         )
 
     def display_choice_add_players_create_tournament(self):
-        menu_choice = input("\n  1 - Add existed players\n" "  2 - Add a new player\n")
-        return menu_choice
-
-    def display_players_by_alphabetical_order_menu(self):
-        """ """
         menu_choice = input(
-            "  1 - Display players by rank\n" "  2 - Go to main menu\n" "  3 - Quit\n"
+            "\n  1 - Add existed players\n"
+            "  2 - Add a new player\n"
+            "  3 - Change ranking\n"
         )
         return menu_choice
 
@@ -485,6 +517,13 @@ class View:
 
     def display_message_other_round_create(self, round_number):
         print("Round " + str(round_number) + " has been created")
+
+    def display_warning_players_same_ranking(self, new_ranking):
+        print(
+            "At least 2 players have "
+            + str(new_ranking)
+            + " as ranking. Please modify ranking"
+        )
 
     def quit(self):
         """

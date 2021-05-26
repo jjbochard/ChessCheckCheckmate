@@ -35,13 +35,15 @@ class Controller:
             return self.create_tournament
         elif response == "2":
             return self.create_player
-        elif response == "5":
+        elif response == "3":
+            return self.display_change_ranking_menu
+        elif response == "4":
             return self.display_tournaments_menu
-        elif response == "6":
+        elif response == "5":
             return self.display_players_menu
-        elif response == "8":
+        elif response == "6":
             return self.quit
-        elif response == "9":
+        elif response == "7":
             return self.display_players_menu
 
     def display_tournaments_menu(self):
@@ -59,8 +61,10 @@ class Controller:
         elif response == "3":
             return self.display_choice_tournament_for_print_matchs
         elif response == "4":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "5":
+            return self.welcome_menu
+        elif response == "6":
             return self.quit
 
     def display_choice_tournament_for_print_players(self):
@@ -79,8 +83,10 @@ class Controller:
         elif response == "3":
             return self.display_choice_tournament_for_print_matchs
         elif response == "4":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "5":
+            return self.welcome_menu
+        elif response == "6":
             return self.quit
 
     def display_choice_tournament_for_print_rounds(self):
@@ -99,8 +105,10 @@ class Controller:
         elif response == "3":
             return self.display_choice_tournament_for_print_matchs
         elif response == "4":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "5":
+            return self.welcome_menu
+        elif response == "6":
             return self.quit
 
     def display_choice_tournament_for_print_matchs(self):
@@ -119,8 +127,10 @@ class Controller:
         elif response == "3":
             return self.display_choice_tournament_for_print_matchs
         elif response == "4":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "5":
+            return self.welcome_menu
+        elif response == "6":
             return self.quit
 
     def display_players_menu(self):
@@ -135,8 +145,10 @@ class Controller:
         elif response == "2":
             return self.display_players_by_alphabetical_order
         elif response == "3":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "4":
+            return self.welcome_menu
+        elif response == "5":
             return self.quit
 
     def display_players_by_ranking(self):
@@ -152,11 +164,11 @@ class Controller:
         if response == "1":
             return self.display_players_by_alphabetical_order
         elif response == "2":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "3":
+            return self.welcome_menu
+        elif response == "4":
             return self.quit
-
-        response = self.view.display_players_menu()
 
     def display_players_by_alphabetical_order(self):
         """ """
@@ -171,11 +183,11 @@ class Controller:
         if response == "1":
             return self.display_players_by_ranking
         elif response == "2":
-            return self.welcome_menu
+            return self.display_change_ranking_menu
         elif response == "3":
+            return self.welcome_menu
+        elif response == "4":
             return self.quit
-
-        response = self.view.display_players_menu()
 
     def quit(self):
         """
@@ -258,13 +270,64 @@ class Controller:
         else:
             return new_player_id
 
+    def display_change_ranking_menu(self):
+        self.view.display_players_by_alphabetical_order()
+        while True:
+            response = self.view.display_ranking_menu()
+            if input_validators.is_valid_display_change_ranking_menu_response(response):
+                break
+        if response == "1":
+            return self.change_ranking
+        elif response == "2":
+            return self.welcome_menu
+
+    def get_input_new_ranking(self):
+        db = TinyDB("db.json")
+        player_table = db.table("player")
+        id_player = int(self.view.choice_player_to_change_ranking())
+        new_ranking = int(
+            input(
+                "Enter a new ranking for "
+                + str(
+                    player_table.all()[id_player - 1]["first_name"]
+                    + " "
+                    + str(player_table.all()[id_player - 1]["last_name"] + "\n")
+                )
+            )
+        )
+        player_table.update(
+            {"ranking": new_ranking},
+            doc_ids=[player_table.all()[id_player - 1].doc_id],
+        )
+        return new_ranking
+
+    def check_same_ranking(self):
+        db = TinyDB("db.json")
+        player_table = db.table("player")
+        players_ranking = []
+        for player in player_table:
+            players_ranking.append(player["ranking"])
+        contains_duplicates = any(
+            players_ranking.count(element) > 1 for element in players_ranking
+        )
+        return contains_duplicates
+
+    def change_ranking(self):
+        new_ranking = self.get_input_new_ranking()
+        contains_duplicates = self.check_same_ranking()
+        while contains_duplicates is True:
+            self.view.display_warning_players_same_ranking(new_ranking)
+            new_ranking = self.get_input_new_ranking()
+            contains_duplicates = self.check_same_ranking()
+        return self.display_change_ranking_menu
+
     def create_round(self):
         db = TinyDB("db.json")
         round_table = db.table("round")
         new_round = Round.create_round()
         serialized_round = vars(new_round)
         round_table.insert(serialized_round)
-        new_round_id = round_table.all()[-1].doc_id
+        new_round_id = round_table.all()[-1].doc_i
         return new_round_id
 
     def choice_player_for_add_player_to_a_tournament(self):
