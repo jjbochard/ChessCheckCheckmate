@@ -37,11 +37,6 @@ class Tournament:
         state_tournament = "active"
         return Tournament(name, place, time_control, description, state_tournament)
 
-    def create_first_round(self):
-        for player in self.players:
-            print(int(player[0]))
-        self.players = sorted(self.players, key=lambda player: player.ranking)
-
 
 class Player:
     def __init__(self, first_name, last_name, date_of_birth, gender, ranking, score=0):

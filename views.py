@@ -512,8 +512,39 @@ class View:
     def display_warning_add_a_player_several_time(self):
         print("Player alredy choosen. Please add an other player\n")
 
+    def display_match_information(self):
+        db = TinyDB("db.json")
+        player_table = db.table("player")
+        match_table = db.table("match")
+        print(
+            "\n"
+            + str(
+                player_table.get(doc_id=match_table.all()[-1]["match"][0][0])[
+                    "first_name"
+                ]
+            )
+            + " "
+            + str(
+                player_table.get(doc_id=match_table.all()[-1]["match"][0][0])[
+                    "last_name"
+                ]
+            )
+            + " jouera contre "
+            + str(
+                player_table.get(doc_id=match_table.all()[-1]["match"][1][0])[
+                    "first_name"
+                ]
+            )
+            + " "
+            + str(
+                player_table.get(doc_id=match_table.all()[-1]["match"][1][0])[
+                    "last_name"
+                ]
+            )
+        )
+
     def display_message_first_round_create(self):
-        print("First round has been created")
+        print("\nMatchs of round 1 : ")
 
     def display_message_other_round_create(self, round_number):
         print("Round " + str(round_number) + " has been created")
