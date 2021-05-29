@@ -516,30 +516,32 @@ class View:
         db = TinyDB("db.json")
         player_table = db.table("player")
         match_table = db.table("match")
+        round_table = db.table("round")
+        matchs_for_a_round = []
+        matchs_for_a_round_to_print = []
+        black_or_white_player = []
+        for match in round_table.all()[-1]["list_of_match"]:
+            matchs_for_a_round.append(match_table.all()[match - 1])
+        for match in matchs_for_a_round:
+            black_or_white_player.append(
+                [
+                    str(player_table.get(doc_id=match["match"][0][0])["first_name"])
+                    + " "
+                    + str(player_table.get(doc_id=match["match"][0][0])["last_name"]),
+                    str(player_table.get(doc_id=match["match"][1][0])["first_name"])
+                    + " "
+                    + str(player_table.get(doc_id=match["match"][1][0])["last_name"]),
+                ]
+            )
+            matchs_for_a_round_to_print.append(match)
         print(
-            "\n"
-            + str(
-                player_table.get(doc_id=match_table.all()[-1]["match"][0][0])[
-                    "first_name"
-                ]
-            )
-            + " "
-            + str(
-                player_table.get(doc_id=match_table.all()[-1]["match"][0][0])[
-                    "last_name"
-                ]
-            )
-            + " jouera contre "
-            + str(
-                player_table.get(doc_id=match_table.all()[-1]["match"][1][0])[
-                    "first_name"
-                ]
-            )
-            + " "
-            + str(
-                player_table.get(doc_id=match_table.all()[-1]["match"][1][0])[
-                    "last_name"
-                ]
+            tabulate(
+                black_or_white_player,
+                headers=[
+                    "Black",
+                    "White",
+                ],
+                tablefmt="fancy_grid",
             )
         )
 

@@ -347,7 +347,6 @@ class Controller:
             list_of_players_by_ranking = Player.make_list_of_players_by_ranking(
                 self, list_ranking_player
             )
-            self.view.display_message_first_round_create()
             Play = Query()
             for i in range(4):
                 new_match = self.generate_color_player(
@@ -361,7 +360,6 @@ class Controller:
                 serialized_match = vars(new_match)
                 match_table.insert(serialized_match)
                 new_matchs_id.append(match_table.all()[-1].doc_id)
-                self.view.display_match_information()
             list_of_rounds = tournament_table.all()[-1]["rounds"]
             list_of_rounds.append(round_table.all()[-1].doc_id)
             round_table.update(
@@ -372,6 +370,8 @@ class Controller:
                 {"rounds": list_of_rounds},
                 doc_ids=[tournament_table.all()[-1].doc_id],
             )
+            self.view.display_message_first_round_create()
+            self.view.display_match_information()
             self.write_score()
 
         else:
@@ -388,9 +388,6 @@ class Controller:
                 list_score_player.append((player_table.get(doc_id=player)))
             list_of_players_by_score = Player.make_list_of_players_by_score(
                 self, list_score_player
-            )
-            self.view.display_message_other_round_create(
-                str(round_table.all()[-1]["current_round"])
             )
             all_matchs_of_a_tournament = []
             for rounds in tournament_table.all()[-1]["rounds"]:
@@ -446,7 +443,6 @@ class Controller:
                 serialized_match = vars(new_match)
                 match_table.insert(serialized_match)
                 new_matchs_id.append(match_table.all()[-1].doc_id)
-                self.view.display_match_information()
                 j += 2
             list_of_rounds = tournament_table.all()[-1]["rounds"]
             list_of_rounds.append(round_table.all()[-1].doc_id)
@@ -459,6 +455,10 @@ class Controller:
                 {"rounds": list_of_rounds},
                 doc_ids=[tournament_table.all()[-1].doc_id],
             )
+            self.view.display_message_other_round_create(
+                str(round_table.all()[-1]["current_round"])
+            )
+            self.view.display_match_information()
             self.write_score()
             if round_table.all()[-1]["current_round"] == 4:
                 self.create_end_tournament()
