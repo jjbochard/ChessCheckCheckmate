@@ -78,16 +78,8 @@ class Player:
         return list_of_players_ordered
 
     def make_list_of_players_by_score(self, list):
-        sort_list_of_players = []
-        top_list_of_players = []
-        down_list_of_players = []
-        list_of_players_ordered = (top_list_of_players, down_list_of_players)
-        sort_list_of_players = Player.sort_player_by_score(self, list)
-        j = int(len(sort_list_of_players) / 2)
-        for i in range(int(len(sort_list_of_players) / 2)):
-            down_list_of_players.append(sort_list_of_players.pop(j))
-            top_list_of_players.append(sort_list_of_players.pop(0))
-            j -= 1
+        list_of_players_ordered = []
+        list_of_players_ordered = Player.sort_player_by_score(self, list)
         return list_of_players_ordered
 
 

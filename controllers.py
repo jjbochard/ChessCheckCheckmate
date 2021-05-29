@@ -1,5 +1,6 @@
 import collections
 import json
+import random
 from datetime import datetime
 
 from tinydb import Query, TinyDB
@@ -348,19 +349,8 @@ class Controller:
             )
             self.view.display_message_first_round_create()
             Play = Query()
-            for i in range(
-                int(
-                    (
-                        len(
-                            tournament_table.get(
-                                doc_id=tournament_table.all()[-1].doc_id
-                            )["players"]
-                        )
-                    )
-                    / 2
-                )
-            ):
-                new_match = Match(
+            for i in range(4):
+                new_match = self.generate_color_player(
                     player_table.get(
                         Play.ranking == list_of_players_by_ranking[0][i]["ranking"]
                     ).doc_id,
@@ -372,10 +362,8 @@ class Controller:
                 match_table.insert(serialized_match)
                 new_matchs_id.append(match_table.all()[-1].doc_id)
                 self.view.display_match_information()
-            print(tournament_table.all()[-1]["rounds"])
             list_of_rounds = tournament_table.all()[-1]["rounds"]
             list_of_rounds.append(round_table.all()[-1].doc_id)
-            print(list_of_rounds)
             round_table.update(
                 {"list_of_match": new_matchs_id},
                 doc_ids=[round_table.all()[-1].doc_id],
@@ -414,58 +402,52 @@ class Controller:
                         ]
                     )
             Play = Query()
-            print(all_matchs_of_a_tournament)
-            for i in range(
-                int(
-                    (
-                        len(
-                            tournament_table.get(
-                                doc_id=tournament_table.all()[-1].doc_id
-                            )["players"]
-                        )
-                    )
-                    / 2
+            j = 0
+            for i in range(4):
+                k = 1
+                exist = self.check_match_already_play(
+                    all_matchs_of_a_tournament,
+                    player_table.get(
+                        Play.ranking == list_of_players_by_score[j]["ranking"]
+                    ).doc_id,
+                    player_table.get(
+                        Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                    ).doc_id,
                 )
-            ):
-                for match in all_matchs_of_a_tournament:
-                    if collections.Counter(match) == collections.Counter(
-                        [
-                            player_table.get(
-                                Play.ranking
-                                == list_of_players_by_score[0][i]["ranking"]
-                            ).doc_id,
-                            player_table.get(
-                                Play.ranking
-                                == list_of_players_by_score[1][i]["ranking"]
-                            ).doc_id,
-                        ]
-                    ):
-                        print("same opponent")
-                        for player in list_of_players_by_score[1]:
-                            print(player.doc_id)
-
-                        (
-                            list_of_players_by_score[1][i],
-                            list_of_players_by_score[1][i + 1],
-                        ) = (
-                            list_of_players_by_score[1][i + 1],
-                            list_of_players_by_score[1][i],
-                        )
-                        for player in list_of_players_by_score[1]:
-                            print(player.doc_id)
-
-                    new_match = Match(
+                while exist is True:
+                    exist = self.check_match_already_play(
+                        all_matchs_of_a_tournament,
                         player_table.get(
-                            Play.ranking == list_of_players_by_score[0][i]["ranking"]
+                            Play.ranking == list_of_players_by_score[j]["ranking"]
                         ).doc_id,
                         player_table.get(
-                            Play.ranking == list_of_players_by_score[1][i]["ranking"]
+                            Play.ranking
+                            == list_of_players_by_score[j + 1 + k]["ranking"]
                         ).doc_id,
                     )
+
+                    (
+                        list_of_players_by_score[j + 1],
+                        list_of_players_by_score[j + 1 + k],
+                    ) = (
+                        list_of_players_by_score[j + 1 + k],
+                        list_of_players_by_score[j + 1],
+                    )
+                    k += 1
+
+                new_match = self.generate_color_player(
+                    player_table.get(
+                        Play.ranking == list_of_players_by_score[j]["ranking"]
+                    ).doc_id,
+                    player_table.get(
+                        Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                    ).doc_id,
+                )
                 serialized_match = vars(new_match)
                 match_table.insert(serialized_match)
                 new_matchs_id.append(match_table.all()[-1].doc_id)
                 self.view.display_match_information()
+                j += 2
             list_of_rounds = tournament_table.all()[-1]["rounds"]
             list_of_rounds.append(round_table.all()[-1].doc_id)
             round_table.update(
@@ -478,7 +460,6 @@ class Controller:
                 doc_ids=[tournament_table.all()[-1].doc_id],
             )
             self.write_score()
-            print(round_table.all()[-1]["current_round"])
             if round_table.all()[-1]["current_round"] == 4:
                 self.create_end_tournament()
 
@@ -546,6 +527,21 @@ class Controller:
             doc_ids=[round_table.all()[-1].doc_id],
         )
         self.view.display_players_by_score()
+
+    def generate_color_player(self, player_1, player_2):
+        black_or_white = random.randrange(2)
+        if black_or_white == 0:
+            new_match = Match(player_1, player_2)
+        else:
+            new_match = Match(player_2, player_1)
+        return new_match
+
+    def check_match_already_play(self, list_match, id1, id2):
+        exist = False
+        for match in list_match:
+            if collections.Counter([id1, id2]) == collections.Counter(match):
+                exist = True
+        return exist
 
     def create_end_tournament(self):
         db = TinyDB("db.json")
