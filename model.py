@@ -9,7 +9,7 @@ class Tournament:
         place,
         time_control,
         description,
-        state_tournament,
+        status_tournament,
         start_date=json.dumps(datetime.now().strftime("%d/%m/%Y %H:%M:%S")),
         end_date=None,
         rounds=[],
@@ -26,7 +26,7 @@ class Tournament:
         self.rounds = rounds
         self.players = players
         self.nb_of_rounds = nb_of_rounds
-        self.state_tournament = state_tournament
+        self.status_tournament = status_tournament
 
     @classmethod
     def create_tournament(cls):
@@ -34,12 +34,14 @@ class Tournament:
         place = input("Place: ")
         time_control = input("Time control: ")
         description = input("Description: ")
-        state_tournament = "active"
-        return Tournament(name, place, time_control, description, state_tournament)
+        status_tournament = "pending"
+        return Tournament(name, place, time_control, description, status_tournament)
 
 
 class Player:
-    def __init__(self, first_name, last_name, date_of_birth, gender, ranking, score=0):
+    def __init__(
+        self, first_name, last_name, date_of_birth, gender, ranking, score=0.0
+    ):
         self.first_name = first_name
         self.last_name = last_name
         self.date_of_birth = date_of_birth
@@ -90,17 +92,25 @@ class Match:
 
 class Round:
     def __init__(
-        self, name, start_date, current_round, end_date=None, list_of_match=[]
+        self,
+        name,
+        start_date,
+        current_round,
+        status_round,
+        end_date=None,
+        list_of_match=[],
     ):
         self.name = name
         self.start_date = start_date
         self.end_date = end_date
         self.list_of_match = list_of_match
         self.current_round = current_round
+        self.status_round = status_round
 
     @classmethod
     def create_round(cls):
         current_round = 1
         name = "Round " + str(current_round)
         start_date = json.dumps(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
-        return Round(name, start_date, current_round)
+        status_round = "pending"
+        return Round(name, start_date, current_round, status_round)

@@ -15,15 +15,25 @@ class Controller:
         self.view = view
 
     def run(self):
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
+
         """
         Loop that runs all the next
         'menu' methods from the controllers
         """
         self.view.welcome_message()
-        self.methode_to_execute = self.welcome_menu
-        while self.methode_to_execute is not None:
-            next_method = self.methode_to_execute()
-            self.methode_to_execute = next_method
+        # if round_table.all()[-1]["status_round"] == "pending":
+        #     print("wef")
+        if tournament_table.all()[-1]["status_tournament"] == "pending":
+            self.welcome_menu_continue()
+        else:
+            self.welcome_menu()
+        # else:
+        #     self.methode_to_execute = self.welcome_menu
+        # while self.methode_to_execute is not None:
+        #     next_method = self.methode_to_execute()
+        #     self.methode_to_execute = next_method
 
     def welcome_menu(self):
         """ """
@@ -33,19 +43,37 @@ class Controller:
             if input_validators.is_valid_welcome_menu_response(response):
                 break
         if response == "1":
-            return self.create_tournament
+            return self.create_tournament()
         elif response == "2":
-            return self.create_player
+            return self.create_player()
         elif response == "3":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "4":
-            return self.display_tournaments_menu
+            return self.display_tournaments_menu()
         elif response == "5":
-            return self.display_players_menu
+            return self.display_players_menu()
         elif response == "6":
-            return self.quit
-        elif response == "7":
-            return self.create_other_round
+            return self.quit()
+
+    def welcome_menu_continue(self):
+        """ """
+
+        while True:
+            response = self.view.welcome_menu_continue()
+            if input_validators.is_valid_welcome_menu_continue_response(response):
+                break
+        if response == "1":
+            return self.continue_tournament()
+        elif response == "2":
+            return self.create_player()
+        elif response == "3":
+            return self.display_change_ranking_menu()
+        elif response == "4":
+            return self.display_tournaments_menu()
+        elif response == "5":
+            return self.display_players_menu()
+        elif response == "6":
+            return self.quit()
 
     def display_tournaments_menu(self):
         """ """
@@ -56,17 +84,17 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_choice_tournament_for_print_players
+            return self.display_choice_tournament_for_print_players()
         elif response == "2":
-            return self.display_choice_tournament_for_print_rounds
+            return self.display_choice_tournament_for_print_rounds()
         elif response == "3":
-            return self.display_choice_tournament_for_print_matchs
+            return self.display_choice_tournament_for_print_matchs()
         elif response == "4":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "6":
-            return self.quit
+            return self.quit()
 
     def display_choice_tournament_for_print_players(self):
         """ """
@@ -78,17 +106,17 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_choice_tournament_for_print_players
+            return self.display_choice_tournament_for_print_players()
         elif response == "2":
-            return self.display_choice_tournament_for_print_rounds
+            return self.display_choice_tournament_for_print_rounds()
         elif response == "3":
-            return self.display_choice_tournament_for_print_matchs
+            return self.display_choice_tournament_for_print_matchs()
         elif response == "4":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "6":
-            return self.quit
+            return self.quit()
 
     def display_choice_tournament_for_print_rounds(self):
         """ """
@@ -100,17 +128,17 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_choice_tournament_for_print_players
+            return self.display_choice_tournament_for_print_players()
         elif response == "2":
-            return self.display_choice_tournament_for_print_rounds
+            return self.display_choice_tournament_for_print_rounds()
         elif response == "3":
-            return self.display_choice_tournament_for_print_matchs
+            return self.display_choice_tournament_for_print_matchs()
         elif response == "4":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "6":
-            return self.quit
+            return self.quit()
 
     def display_choice_tournament_for_print_matchs(self):
         """ """
@@ -122,17 +150,17 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_choice_tournament_for_print_players
+            return self.display_choice_tournament_for_print_players()
         elif response == "2":
-            return self.display_choice_tournament_for_print_rounds
+            return self.display_choice_tournament_for_print_rounds()
         elif response == "3":
-            return self.display_choice_tournament_for_print_matchs
+            return self.display_choice_tournament_for_print_matchs()
         elif response == "4":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "6":
-            return self.quit
+            return self.quit()
 
     def display_players_menu(self):
         """ """
@@ -142,15 +170,112 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_players_by_ranking
+            return self.display_players_by_ranking()
         elif response == "2":
-            return self.display_players_by_alphabetical_order
+            return self.display_players_by_alphabetical_order()
         elif response == "3":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "4":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "5":
-            return self.quit
+            return self.quit()
+
+    def write_score_menu(self, match):
+        db = TinyDB("db.json")
+
+        match_table = db.table("match")
+        player_table = db.table("player")
+
+        """ """
+
+        while True:
+            response = self.view.display_write_score_menu(match)
+            if input_validators.is_valid_display_write_score_menu_response(response):
+                break
+        update_match = match
+        if response == "1":
+            update_match["match"][0][1] = 1.0
+            update_match["match"][1][1] = 0.0
+
+            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][0][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
+                ],
+            )
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][1][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
+                ],
+            )
+
+        elif response == "2":
+            update_match["match"][0][1] = 0.0
+            update_match["match"][1][1] = 1.0
+
+            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][0][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
+                ],
+            )
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][1][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
+                ],
+            )
+
+        elif response == "3":
+            update_match["match"][0][1] = 0.5
+            update_match["match"][1][1] = 0.5
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][0][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
+                ],
+            )
+            player_table.update(
+                {
+                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
+                        "score"
+                    ]
+                    + update_match["match"][1][1]
+                },
+                doc_ids=[
+                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
+                ],
+            )
+
+            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
 
     def display_players_by_ranking(self):
         """ """
@@ -163,13 +288,13 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_players_by_alphabetical_order
+            return self.display_players_by_alphabetical_order()
         elif response == "2":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "3":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "4":
-            return self.quit
+            return self.quit()
 
     def display_players_by_alphabetical_order(self):
         """ """
@@ -182,13 +307,13 @@ class Controller:
                 break
 
         if response == "1":
-            return self.display_players_by_ranking
+            return self.display_players_by_ranking()
         elif response == "2":
-            return self.display_change_ranking_menu
+            return self.display_change_ranking_menu()
         elif response == "3":
-            return self.welcome_menu
+            return self.welcome_menu()
         elif response == "4":
-            return self.quit
+            return self.quit()
 
     def display_change_ranking_menu(self):
         self.view.display_players_by_alphabetical_order()
@@ -197,9 +322,33 @@ class Controller:
             if input_validators.is_valid_display_change_ranking_menu_response(response):
                 break
         if response == "1":
-            return self.change_ranking
+            return self.change_ranking()
         elif response == "2":
-            return self.welcome_menu
+            return self.welcome_menu()
+
+    def display_choice_create_next_round(self):
+        while True:
+            response = self.view.display_choice_create_next_round_menu()
+            if input_validators.is_valid_display_choice_create_next_round_menu_response(
+                response
+            ):
+                break
+        if response == "1":
+            return self.create_round()
+        elif response == "2":
+            return self.quit()
+
+    def display_choice_end_round(self):
+        while True:
+            response = self.view.display_choice_end_round_menu()
+            if input_validators.is_valid_display_choice_end_round_menu_response(
+                response
+            ):
+                break
+        if response == "1":
+            return self.end_round()
+        elif response == "2":
+            return self.quit()
 
     def quit(self):
         """
@@ -210,14 +359,46 @@ class Controller:
     def create_tournament(self):
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
+        round_table = db.table("round")
+        match_table = db.table("match")
         new_tournament = Tournament.create_tournament()
         serialized_tournament = vars(new_tournament)
         tournament_table.insert(serialized_tournament)
+
         self.add_players_to_tournament()
-        # while round_table.all()[-1]["current_round"] < 4:
         for i in range(4):
-            self.create_round()
+            self.display_choice_create_next_round()
+            self.display_choice_end_round()
+
             i += 1
+            j = -4
+            while j < 0:
+                self.write_score_menu(match_table.all()[j])
+                j += 1
+            self.view.display_players_by_score()
+            if round_table.all()[-1]["current_round"] == 4:
+                self.create_end_tournament()
+                self.view.display_players_by_score()
+
+    def continue_tournament(self):
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
+        round_table = db.table("round")
+        match_table = db.table("match")
+
+        if round_table.all()[-1]["status_round"] == "pending":
+            while tournament_table.all()[-1]["status_tournament"] != "finished":
+                self.display_choice_end_round()
+                j = -4
+                while j < 0:
+                    self.write_score_menu(match_table.all()[j])
+                    j += 1
+                self.view.display_players_by_score()
+                if round_table.all()[-1]["current_round"] == 4:
+                    self.create_end_tournament()
+                    self.view.display_players_by_score()
+                else:
+                    self.display_choice_create_next_round()
 
     def add_players_to_tournament(self):
         db = TinyDB("db.json")
@@ -283,10 +464,10 @@ class Controller:
         player_table.insert(serialized_player)
         new_player_id = player_table.all()[-1].doc_id
         if (
-            tournament_table.all()[-1]["state_tournament"] == "finished"
+            tournament_table.all()[-1]["status_tournament"] == "finished"
             or not tournament_table.all()
         ):
-            return self.welcome_menu
+            return self.welcome_menu()
         else:
             return new_player_id
 
@@ -328,7 +509,23 @@ class Controller:
             self.view.display_warning_players_same_ranking(new_ranking)
             new_ranking = self.get_input_new_ranking()
             contains_duplicates = self.check_same_ranking()
-        return self.display_change_ranking_menu
+        return self.display_change_ranking_menu()
+
+    def end_round(self):
+        db = TinyDB("db.json")
+        round_table = db.table("round")
+        round_table.update(
+            {"status_round": "finished"},
+            doc_ids=[round_table.all()[-1].doc_id],
+        )
+        round_table.update(
+            {
+                "end_date": json.dumps(
+                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
+                )
+            },
+            doc_ids=[round_table.all()[-1].doc_id],
+        )
 
     def create_round(self):
         db = TinyDB("db.json")
@@ -372,7 +569,6 @@ class Controller:
             )
             self.view.display_message_first_round_create()
             self.view.display_match_information()
-            self.write_score()
 
         else:
             serialized_round["current_round"] = (
@@ -459,74 +655,10 @@ class Controller:
                 str(round_table.all()[-1]["current_round"])
             )
             self.view.display_match_information()
-            self.write_score()
-            if round_table.all()[-1]["current_round"] == 4:
-                self.create_end_tournament()
 
     def choice_player_for_add_player_to_a_tournament(self):
         choice_player = self.view.display_choice_player_to_append_to_a_tournament()
         return choice_player
-
-    def write_score(self):
-        db = TinyDB("db.json")
-        match_table = db.table("match")
-        round_table = db.table("round")
-        player_table = db.table("player")
-
-        i = -4
-        j = -4
-        index = 0
-        matchs_to_write_score = []
-        while len(matchs_to_write_score) < 4:
-            matchs_to_write_score.append(match_table.all()[j])
-            j += 1
-        for match in matchs_to_write_score:
-            update_match = matchs_to_write_score[index]
-            update_match["match"][0][1] = player_table.all()[
-                update_match["match"][0][0] - 1
-            ]["score"] + float(
-                input(
-                    "Enter the score of the player number "
-                    + str(update_match["match"][0][0])
-                    + ":\n "
-                )
-            )
-            update_match["match"][1][1] = player_table.all()[
-                update_match["match"][1][0] - 1
-            ]["score"] + float(
-                input(
-                    "Enter the score of the player number "
-                    + str(update_match["match"][1][0])
-                    + ":\n "
-                )
-            )
-            match_table.update(
-                {"match": update_match["match"]},
-                doc_ids=[match_table.all()[i].doc_id],
-            )
-            player_table.update(
-                {"score": update_match["match"][0][1]},
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
-                ],
-            )
-            player_table.update(
-                {"score": update_match["match"][1][1]},
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
-                ],
-            )
-            i += 1
-            index += 1
-        round_table.update(
-            {
-                "end_date": json.dumps(
-                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
-                )
-            },
-            doc_ids=[round_table.all()[-1].doc_id],
-        )
-        self.view.display_players_by_score()
 
     def generate_color_player(self, player_1, player_2):
         black_or_white = random.randrange(2)
@@ -555,6 +687,6 @@ class Controller:
             doc_ids=[tournament_table.all()[-1].doc_id],
         )
         tournament_table.update(
-            {"state_tournament": "finished"},
+            {"status_tournament": "finished"},
             doc_ids=[tournament_table.all()[-1].doc_id],
         )

@@ -29,6 +29,24 @@ class View:
 
         return menu_choice
 
+    def welcome_menu_continue(self):
+        """ """
+        # print("")
+        menu_choice = input(
+            "=========="
+            "\n"
+            "\nWhat do you want to do :\n"
+            "  1 - Continue a tournament\n"
+            "  2 - Create a player\n"
+            "  3 - Change ranking\n"
+            "  4 - Display tournaments\n"
+            "  5 - Display players\n"
+            "  6 - Quit\n"
+            "  7 - Test\n"
+        )
+
+        return menu_choice
+
     def display_tournaments_menu(self):
         """ """
         # print("")
@@ -42,6 +60,16 @@ class View:
             "  6 - Quit\n"
         )
 
+        return menu_choice
+
+    def display_choice_create_next_round_menu(self):
+        """ """
+        menu_choice = input("\n" "  1 - Create next round\n" "  2 - Quit\n")
+        return menu_choice
+
+    def display_choice_end_round_menu(self):
+        """ """
+        menu_choice = input("\n" "  1 - End round\n" "  2 - Quit\n")
         return menu_choice
 
     def display_choice_player_to_append_to_a_tournament(self):
@@ -456,6 +484,28 @@ class View:
                 tablefmt="fancy_grid",
             )
         )
+
+    def display_write_score_menu(self, match):
+        """ """
+        db = TinyDB("db.json")
+        player_table = db.table("player")
+        menu_choice = input(
+            "\n"
+            "\nWho win :\n"
+            "  1 - "
+            + player_table.get(doc_id=match["match"][0][0])["first_name"]
+            + " "
+            + player_table.get(doc_id=match["match"][0][0])["last_name"]
+            + " win\n"
+            "  2 - "
+            + player_table.get(doc_id=match["match"][1][0])["first_name"]
+            + " "
+            + player_table.get(doc_id=match["match"][1][0])["last_name"]
+            + " win\n"
+            "  3 - Draw match\n"
+        )
+
+        return menu_choice
 
     def display_players_by_score(self):
         """ """
