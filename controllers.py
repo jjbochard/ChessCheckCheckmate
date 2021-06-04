@@ -355,6 +355,7 @@ class Controller:
         Close the program
         """
         self.view.quit()
+        return True
 
     def create_tournament(self):
         db = TinyDB("db.json")
@@ -366,11 +367,13 @@ class Controller:
         tournament_table.insert(serialized_tournament)
 
         self.add_players_to_tournament()
-        for i in range(4):
-            self.display_choice_create_next_round()
-            self.display_choice_end_round()
-
-            i += 1
+        while tournament_table.all()[-1]["status_tournament"] != "finished":
+            quit_before_create_round = self.display_choice_create_next_round()
+            if quit_before_create_round is True:
+                break
+            quit_before_end_round = self.display_choice_end_round()
+            if quit_before_end_round is True:
+                break
             j = -4
             while j < 0:
                 self.write_score_menu(match_table.all()[j])
@@ -386,9 +389,12 @@ class Controller:
         round_table = db.table("round")
         match_table = db.table("match")
 
-        if round_table.all()[-1]["status_round"] == "pending":
-            while tournament_table.all()[-1]["status_tournament"] != "finished":
-                self.display_choice_end_round()
+        while tournament_table.all()[-1]["status_tournament"] != "finished":
+            if round_table.all()[-1]["status_round"] == "pending":
+                quit_before_end_round = self.display_choice_end_round()
+                if quit_before_end_round is True:
+                    break
+
                 j = -4
                 while j < 0:
                     self.write_score_menu(match_table.all()[j])
@@ -398,7 +404,24 @@ class Controller:
                     self.create_end_tournament()
                     self.view.display_players_by_score()
                 else:
-                    self.display_choice_create_next_round()
+                    quit_before_create_round = self.display_choice_create_next_round()
+                    if quit_before_create_round is True:
+                        break
+            else:
+                quit_before_create_round = self.display_choice_create_next_round()
+                if quit_before_create_round is True:
+                    break
+                quit_before_end_round = self.display_choice_end_round()
+                if quit_before_end_round is True:
+                    break
+                j = -4
+                while j < 0:
+                    self.write_score_menu(match_table.all()[j])
+                    j += 1
+                self.view.display_players_by_score()
+                if round_table.all()[-1]["current_round"] == 4:
+                    self.create_end_tournament()
+                    self.view.display_players_by_score()
 
     def add_players_to_tournament(self):
         db = TinyDB("db.json")
