@@ -384,7 +384,6 @@ class Controller:
             self.view.display_players_by_score()
             if round_table.all()[-1]["current_round"] == 4:
                 self.create_end_tournament()
-                self.view.display_players_by_score()
 
     def continue_tournament(self):
         db = TinyDB("db.json")
@@ -410,7 +409,6 @@ class Controller:
                 self.view.display_players_by_score()
                 if round_table.all()[-1]["current_round"] == 4:
                     self.create_end_tournament()
-                    self.view.display_players_by_score()
 
             else:
                 quit_before_end_round = self.display_choice_end_round()
