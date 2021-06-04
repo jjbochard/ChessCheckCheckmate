@@ -25,10 +25,13 @@ class Controller:
         self.view.welcome_message()
         # if round_table.all()[-1]["status_round"] == "pending":
         #     print("wef")
-        if tournament_table.all()[-1]["status_tournament"] == "pending":
-            self.welcome_menu_continue()
-        else:
+        if (
+            tournament_table.all() == []
+            or tournament_table.all()[-1]["status_tournament"] == "finished"
+        ):
             self.welcome_menu()
+        else:
+            self.welcome_menu_continue()
         # else:
         #     self.methode_to_execute = self.welcome_menu
         # while self.methode_to_execute is not None:
@@ -390,7 +393,26 @@ class Controller:
         match_table = db.table("match")
 
         while tournament_table.all()[-1]["status_tournament"] != "finished":
-            if round_table.all()[-1]["status_round"] == "pending":
+            if (
+                round_table.all() == []
+                or round_table.all()[-1]["status_round"] == "finished"
+            ):
+                quit_before_create_round = self.display_choice_create_next_round()
+                if quit_before_create_round is True:
+                    break
+                quit_before_end_round = self.display_choice_end_round()
+                if quit_before_end_round is True:
+                    break
+                j = -4
+                while j < 0:
+                    self.write_score_menu(match_table.all()[j])
+                    j += 1
+                self.view.display_players_by_score()
+                if round_table.all()[-1]["current_round"] == 4:
+                    self.create_end_tournament()
+                    self.view.display_players_by_score()
+
+            else:
                 quit_before_end_round = self.display_choice_end_round()
                 if quit_before_end_round is True:
                     break
@@ -407,21 +429,6 @@ class Controller:
                     quit_before_create_round = self.display_choice_create_next_round()
                     if quit_before_create_round is True:
                         break
-            else:
-                quit_before_create_round = self.display_choice_create_next_round()
-                if quit_before_create_round is True:
-                    break
-                quit_before_end_round = self.display_choice_end_round()
-                if quit_before_end_round is True:
-                    break
-                j = -4
-                while j < 0:
-                    self.write_score_menu(match_table.all()[j])
-                    j += 1
-                self.view.display_players_by_score()
-                if round_table.all()[-1]["current_round"] == 4:
-                    self.create_end_tournament()
-                    self.view.display_players_by_score()
 
     def add_players_to_tournament(self):
         db = TinyDB("db.json")
@@ -558,7 +565,7 @@ class Controller:
         match_table = db.table("match")
         new_round = Round.create_round()
         serialized_round = vars(new_round)
-        if round_table.all()[-1]["current_round"] == 4 or not round_table.all():
+        if round_table.all() == [] or round_table.all()[-1]["current_round"] == 4:
             round_table.insert(serialized_round)
             list_ranking_player = []
             new_matchs_id = []
