@@ -7,7 +7,7 @@
             "date_of_birth": "1991/07/09",
             "gender": "Male",
             "ranking": 8,
-            "score": 2.0
+            "score": 0
         },
         "2": {
             "first_name": "Adrien",
@@ -15,7 +15,7 @@
             "date_of_birth": "1992/01/08",
             "gender": "Male",
             "ranking": 10,
-            "score": 2.5
+            "score": 0
         },
         "3": {
             "first_name": "Estelle",
@@ -23,7 +23,7 @@
             "date_of_birth": "1993/02/07",
             "gender": "Female",
             "ranking": 145,
-            "score": 2.0
+            "score": 0
         },
         "4": {
             "first_name": "Phillipe",
@@ -31,7 +31,7 @@
             "date_of_birth": "1994/03/06",
             "gender": "Male",
             "ranking": 13,
-            "score": 2.5
+            "score": 0
         },
         "5": {
             "first_name": "Sophie",
@@ -39,7 +39,7 @@
             "date_of_birth": "1995/04/05",
             "gender": "Female",
             "ranking": 2,
-            "score": 3.0
+            "score": 0
         },
         "6": {
             "first_name": "Gustave",
@@ -47,7 +47,7 @@
             "date_of_birth": "1995/05/04",
             "gender": "Male",
             "ranking": 87,
-            "score": 1.5
+            "score": 0
         },
         "7": {
             "first_name": "Marc",
@@ -55,7 +55,7 @@
             "date_of_birth": "1997/06/10",
             "gender": "Male",
             "ranking": 14,
-            "score": 0.0
+            "score": 0
         },
         "8": {
             "first_name": "Jacob",
@@ -63,7 +63,7 @@
             "date_of_birth": "1998/07/23",
             "gender": "Male",
             "ranking": 1,
-            "score": 2.5
+            "score": 0
         },
         "9": {
             "first_name": "Dupond",

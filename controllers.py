@@ -23,8 +23,6 @@ class Controller:
         'menu' methods from the controllers
         """
         self.view.welcome_message()
-        # if round_table.all()[-1]["status_round"] == "pending":
-        #     print("wef")
         if (
             tournament_table.all() == []
             or tournament_table.all()[-1]["status_tournament"] == "finished"
@@ -32,11 +30,6 @@ class Controller:
             self.welcome_menu()
         else:
             self.welcome_menu_continue()
-        # else:
-        #     self.methode_to_execute = self.welcome_menu
-        # while self.methode_to_execute is not None:
-        #     next_method = self.methode_to_execute()
-        #     self.methode_to_execute = next_method
 
     def welcome_menu(self):
         """ """
@@ -432,49 +425,64 @@ class Controller:
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
         player_table = db.table("player")
-        # number_of_player = 0
-        list_of_players = [1, 2, 3, 4, 5, 6, 7, 8]
-        # while number_of_player < 8:
-        #     self.view.display_remaining_players_to_add(number_of_player)
-        #     self.view.display_players_by_id()
-        #     while True:
-        #         response = self.view.display_choice_add_players_create_tournament()
-        #         if input_validators.is_valid_display_choice_add_players_create_tournament_menu_response(
-        #             response
-        #         ):
-        #             break
-        #     if response == "1":
-        #         existed_player_id = int(
-        #             self.choice_player_for_add_player_to_a_tournament()
-        #         )
-        #         list_of_players.append(existed_player_id)
-        #     elif response == "2":
-        #         new_player_id = self.create_player()
-        #         list_of_players.append(new_player_id)
+        number_of_player = 0
+        list_of_players_added = []
+        list_of_remaining_players = []
+        for player in player_table:
+            list_of_remaining_players.append(
+                [
+                    player.doc_id,
+                    player["last_name"],
+                    player["first_name"],
+                    player["ranking"],
+                    player["date_of_birth"],
+                    player["gender"],
+                ]
+            )
+        while number_of_player < 8:
+            self.view.display_remaining_players_by_id(list_of_remaining_players)
+            self.view.display_remaining_players_to_add(number_of_player)
+            while True:
+                response = self.view.display_choice_add_players_create_tournament()
+                if input_validators.is_valid_display_choice_add_players_create_tournament_menu_response(
+                    response
+                ):
+                    break
+            if response == "1":
+                existed_player_id = int(
+                    self.choice_player_for_add_player_to_a_tournament()
+                )
+                list_of_players_added.append(existed_player_id)
+            elif response == "2":
+                new_player_id = self.create_player()
+                list_of_players_added.append(new_player_id)
 
-        #     self.view.display_player_already_choosen(list_of_players)
-        #     number_of_player += 1
+            number_of_player += 1
 
-        #     contains_duplicates = any(
-        #         list_of_players.count(element) > 1 for element in list_of_players
-        #     )
-        #     if contains_duplicates is True:
-        #         list_of_players.pop(-1)
-        #         number_of_player -= 1
-        #         self.view.display_warning_add_a_player_several_time()
-        #         continue
+            contains_duplicates = any(
+                list_of_players_added.count(element) > 1
+                for element in list_of_players_added
+            )
+            if contains_duplicates is True:
+                list_of_players_added.pop(-1)
+                number_of_player -= 1
+                self.view.display_warning_add_a_player_several_time()
+                continue
 
-        #     tournament_table.update(
-        #         {"players": list_of_players},
-        #         doc_ids=[tournament_table.all()[-1].doc_id],
-        #     )
-        #     for player in tournament_table.all()[-1]["players"]:
-        #         player_table.update(
-        #             {"score": 0},
-        #             doc_ids=[player_table.all()[player - 1].doc_id],
-        #         )
+            tournament_table.update(
+                {"players": list_of_players_added},
+                doc_ids=[tournament_table.all()[-1].doc_id],
+            )
+            for player in tournament_table.all()[-1]["players"]:
+                player_table.update(
+                    {"score": 0},
+                    doc_ids=[player_table.all()[player - 1].doc_id],
+                )
+            for player in list_of_remaining_players:
+                if player[0] == existed_player_id:
+                    list_of_remaining_players.remove(player)
         tournament_table.update(
-            {"players": list_of_players},
+            {"players": list_of_players_added},
             doc_ids=[tournament_table.all()[-1].doc_id],
         )
         for player in tournament_table.all()[-1]["players"]:

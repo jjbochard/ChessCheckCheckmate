@@ -1,3 +1,5 @@
+import sys
+
 from tabulate import tabulate
 from tinydb import TinyDB
 
@@ -13,7 +15,9 @@ class View:
 
     def welcome_menu(self):
         """ """
-        # print("")
+        print("test1")
+        sys.stdout.write("\033[F")
+        print("test2")
         menu_choice = input(
             "=========="
             "\n"
@@ -485,6 +489,36 @@ class View:
             )
         )
 
+    def display_remaining_players_by_id(self, list_of_remaining_players):
+        """ """
+        players = []
+        for player in list_of_remaining_players:
+            players.append(
+                [
+                    player[0],
+                    player[1],
+                    player[2],
+                    player[3],
+                    player[4],
+                    player[5],
+                ]
+            )
+        players = sorted(players)
+        print(
+            tabulate(
+                players,
+                headers=[
+                    "Id",
+                    "First name",
+                    "Last name",
+                    "Ranking",
+                    "Date of birth",
+                    "Gender",
+                ],
+                tablefmt="fancy_grid",
+            )
+        )
+
     def display_write_score_menu(self, match):
         """ """
         db = TinyDB("db.json")
@@ -554,10 +588,6 @@ class View:
 
     def display_remaining_players_to_add(self, number_of_player):
         print("\n" + str(8 - number_of_player) + " players remaining\n")
-
-    def display_player_already_choosen(self, list_of_players):
-        print("Players already choosen :")
-        print(*list_of_players)
 
     def display_warning_add_a_player_several_time(self):
         print("Player alredy choosen. Please add an other player\n")
