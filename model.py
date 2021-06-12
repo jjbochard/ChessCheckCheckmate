@@ -32,7 +32,7 @@ class Tournament:
     def create_tournament(cls):
         name = input("Name: ")
         place = input("Place: ")
-        time_control = input("Time control: ")
+        time_control = input("Time control (biltz, bullet or rapid): ")
         description = input("Description: ")
         status_tournament = "pending"
         return Tournament(name, place, time_control, description, status_tournament)
@@ -53,7 +53,7 @@ class Player:
     def create_player(cls):
         first_name = input("First name : ")
         last_name = input("Last_name : ")
-        date_of_birth = input("Date_of_birth (yyyy/mm/dd) : ")
+        date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")
         gender = input("Gender: ")
         ranking = int(input("Ranking : "))
         return Player(first_name, last_name, date_of_birth, gender, ranking)

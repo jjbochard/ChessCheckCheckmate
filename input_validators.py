@@ -102,7 +102,7 @@ def is_valid_display_choice_create_next_round_menu_response(response):
     Cheking if the welcome input is True or False to continue
     Otherwise the welcome message keeps repeating
     """
-    if response in ["1", "2"]:
+    if response in ["1", "2", "3"]:
         return True
     else:
         return False
@@ -113,7 +113,7 @@ def is_valid_display_choice_end_round_menu_response(response):
     Cheking if the welcome input is True or False to continue
     Otherwise the welcome message keeps repeating
     """
-    if response in ["1", "2"]:
+    if response in ["1", "2", "3"]:
         return True
     else:
         return False
@@ -125,6 +125,17 @@ def is_valid_display_write_score_menu_response(response):
     Otherwise the welcome message keeps repeating
     """
     if response in ["1", "2", "3"]:
+        return True
+    else:
+        return False
+
+
+def is_valid_display_choice_manner_to_print_players_menu_response(response):
+    """
+    Cheking if the welcome input is True or False to continue
+    Otherwise the welcome message keeps repeating
+    """
+    if response in ["1", "2"]:
         return True
     else:
         return False

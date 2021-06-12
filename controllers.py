@@ -95,46 +95,42 @@ class Controller:
     def display_choice_tournament_for_print_players(self):
         """ """
         choice_tournament = self.view.display_choice_tournament_for_print_players()
-        response = self.view.display_players_for_a_tournament(choice_tournament)
         while True:
-            response = self.view.display_tournaments_menu()
-            if input_validators.is_valid_display_tournaments_menu_response(response):
+            choice_manner = self.view.display_choice_manner_to_print_players_menu()
+            if input_validators.is_valid_display_choice_manner_to_print_players_menu_response(
+                choice_manner
+            ):
                 break
+        if choice_manner == "1":
+            self.view.display_players_by_ranking_for_a_tournament(choice_tournament)
+        else:
+            self.view.display_players_by_alphabetical_order_for_a_tournament(
+                choice_tournament
+            )
 
-        if response == "1":
-            return self.display_choice_tournament_for_print_players()
-        elif response == "2":
-            return self.display_choice_tournament_for_print_rounds()
-        elif response == "3":
-            return self.display_choice_tournament_for_print_matchs()
-        elif response == "4":
-            return self.display_change_ranking_menu()
-        elif response == "5":
-            return self.welcome_menu()
-        elif response == "6":
-            return self.quit()
+        # while True:
+        self.display_tournaments_menu()
+        # if input_validators.is_valid_display_tournaments_menu_response(response):
+        #     break
+
+        # if response == "1":
+        #     return self.display_choice_tournament_for_print_players()
+        # elif response == "2":
+        #     return self.display_choice_tournament_for_print_rounds()
+        # elif response == "3":
+        #     return self.display_choice_tournament_for_print_matchs()
+        # elif response == "4":
+        #     return self.display_change_ranking_menu()
+        # elif response == "5":
+        #     return self.welcome_menu()
+        # elif response == "6":
+        #     return self.quit()
 
     def display_choice_tournament_for_print_rounds(self):
         """ """
         choice_tournament = self.view.display_choice_tournament_for_print_rounds()
-        response = self.view.display_rounds_for_a_tournament(choice_tournament)
-        while True:
-            response = self.view.display_tournaments_menu()
-            if input_validators.is_valid_display_tournaments_menu_response(response):
-                break
-
-        if response == "1":
-            return self.display_choice_tournament_for_print_players()
-        elif response == "2":
-            return self.display_choice_tournament_for_print_rounds()
-        elif response == "3":
-            return self.display_choice_tournament_for_print_matchs()
-        elif response == "4":
-            return self.display_change_ranking_menu()
-        elif response == "5":
-            return self.welcome_menu()
-        elif response == "6":
-            return self.quit()
+        self.view.display_rounds_for_a_tournament(choice_tournament)
+        self.display_tournaments_menu()
 
     def display_choice_tournament_for_print_matchs(self):
         """ """
@@ -332,6 +328,8 @@ class Controller:
         if response == "1":
             return self.create_round()
         elif response == "2":
+            return self.welcome_menu()
+        elif response == "3":
             return self.quit()
 
     def display_choice_end_round(self):
@@ -344,6 +342,8 @@ class Controller:
         if response == "1":
             return self.end_round()
         elif response == "2":
+            return self.welcome_menu
+        elif response == "3":
             return self.quit()
 
     def quit(self):
@@ -425,64 +425,65 @@ class Controller:
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
         player_table = db.table("player")
-        number_of_player = 0
-        list_of_players_added = []
-        list_of_remaining_players = []
-        for player in player_table:
-            list_of_remaining_players.append(
-                [
-                    player.doc_id,
-                    player["last_name"],
-                    player["first_name"],
-                    player["ranking"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
-        while number_of_player < 8:
-            self.view.display_remaining_players_by_id(list_of_remaining_players)
-            self.view.display_remaining_players_to_add(number_of_player)
-            while True:
-                response = self.view.display_choice_add_players_create_tournament()
-                if input_validators.is_valid_display_choice_add_players_create_tournament_menu_response(
-                    response
-                ):
-                    break
-            if response == "1":
-                existed_player_id = int(
-                    self.choice_player_for_add_player_to_a_tournament()
-                )
-                list_of_players_added.append(existed_player_id)
-            elif response == "2":
-                new_player_id = self.create_player()
-                list_of_players_added.append(new_player_id)
+        list_of_players = [1, 2, 3, 4, 5, 6, 7, 8]
+        # number_of_player = 0
+        # list_of_players_added = []
+        # list_of_remaining_players = []
+        # for player in player_table:
+        #     list_of_remaining_players.append(
+        #         [
+        #             player.doc_id,
+        #             player["last_name"],
+        #             player["first_name"],
+        #             player["ranking"],
+        #             player["date_of_birth"],
+        #             player["gender"],
+        #         ]
+        #     )
+        # while number_of_player < 8:
+        #     self.view.display_remaining_players_by_id(list_of_remaining_players)
+        #     self.view.display_remaining_players_to_add(number_of_player)
+        #     while True:
+        #         response = self.view.display_choice_add_players_create_tournament()
+        #         if input_validators.is_valid_display_choice_add_players_create_tournament_menu_response(
+        #             response
+        #         ):
+        #             break
+        #     if response == "1":
+        #         existed_player_id = int(
+        #             self.choice_player_for_add_player_to_a_tournament()
+        #         )
+        #         list_of_players_added.append(existed_player_id)
+        #     elif response == "2":
+        #         new_player_id = self.create_player()
+        #         list_of_players_added.append(new_player_id)
 
-            number_of_player += 1
+        #     number_of_player += 1
 
-            contains_duplicates = any(
-                list_of_players_added.count(element) > 1
-                for element in list_of_players_added
-            )
-            if contains_duplicates is True:
-                list_of_players_added.pop(-1)
-                number_of_player -= 1
-                self.view.display_warning_add_a_player_several_time()
-                continue
+        #     contains_duplicates = any(
+        #         list_of_players_added.count(element) > 1
+        #         for element in list_of_players_added
+        #     )
+        #     if contains_duplicates is True:
+        #         list_of_players_added.pop(-1)
+        #         number_of_player -= 1
+        #         self.view.display_warning_add_a_player_several_time()
+        #         continue
 
-            tournament_table.update(
-                {"players": list_of_players_added},
-                doc_ids=[tournament_table.all()[-1].doc_id],
-            )
-            for player in tournament_table.all()[-1]["players"]:
-                player_table.update(
-                    {"score": 0},
-                    doc_ids=[player_table.all()[player - 1].doc_id],
-                )
-            for player in list_of_remaining_players:
-                if player[0] == existed_player_id:
-                    list_of_remaining_players.remove(player)
+        #     tournament_table.update(
+        #         {"players": list_of_players_added},
+        #         doc_ids=[tournament_table.all()[-1].doc_id],
+        #     )
+        #     for player in tournament_table.all()[-1]["players"]:
+        #         player_table.update(
+        #             {"score": 0},
+        #             doc_ids=[player_table.all()[player - 1].doc_id],
+        #         )
+        #     for player in list_of_remaining_players:
+        #         if player[0] == existed_player_id:
+        #             list_of_remaining_players.remove(player)
         tournament_table.update(
-            {"players": list_of_players_added},
+            {"players": list_of_players},
             doc_ids=[tournament_table.all()[-1].doc_id],
         )
         for player in tournament_table.all()[-1]["players"]:

@@ -1,5 +1,3 @@
-import sys
-
 from tabulate import tabulate
 from tinydb import TinyDB
 
@@ -15,31 +13,24 @@ class View:
 
     def welcome_menu(self):
         """ """
-        print("test1")
-        sys.stdout.write("\033[F")
-        print("test2")
         menu_choice = input(
             "=========="
             "\n"
-            "\nWhat do you want to do :\n"
             "  1 - Start a tournament\n"
             "  2 - Create a player\n"
             "  3 - Change ranking\n"
             "  4 - Display tournaments\n"
             "  5 - Display players\n"
             "  6 - Quit\n"
-            "  7 - Test\n"
         )
 
         return menu_choice
 
     def welcome_menu_continue(self):
         """ """
-        # print("")
         menu_choice = input(
             "=========="
             "\n"
-            "\nWhat do you want to do :\n"
             "  1 - Continue a tournament\n"
             "  2 - Create a player\n"
             "  3 - Change ranking\n"
@@ -55,7 +46,6 @@ class View:
         """ """
         # print("")
         menu_choice = input(
-            "\nWhat do you want to do :\n"
             "  1 - Display players of a tournament\n"
             "  2 - Display rounds of a tournament\n"
             "  3 - Display matchs of a tournament\n"
@@ -68,27 +58,73 @@ class View:
 
     def display_choice_create_next_round_menu(self):
         """ """
-        menu_choice = input("\n" "  1 - Create next round\n" "  2 - Quit\n")
+        menu_choice = input(
+            "\n" "  1 - Create next round\n" "  2 - Go to main menu\n" "  3 - Quit\n"
+        )
         return menu_choice
 
     def display_choice_end_round_menu(self):
         """ """
-        menu_choice = input("\n" "  1 - End round\n" "  2 - Quit\n")
+        menu_choice = input(
+            "\n" "  1 - End round\n" "  2 - Go to main menu\n" "  3 - Quit\n"
+        )
         return menu_choice
 
     def display_choice_player_to_append_to_a_tournament(self):
         choice_player = input(
-            "Which player do you want to add to this tournament : (choose an id)\n"
+            "Which player do you want to add to this tournament (choose an id): "
         )
         return choice_player
 
     def display_choice_tournament_for_print_players(self):
         choice_tournament = input(
-            "For which tournament do you want to display players : (choose an id)\n"
+            "For which tournament do you want to display players (choose an id): "
         )
         return choice_tournament
 
-    def display_players_for_a_tournament(self, choice_tournament):
+    def display_choice_manner_to_print_players_menu(self):
+        choice_manner = input(
+            "\n"
+            "  1 - Display players by ranking\n"
+            "  2 - Display players by alphabetical order\n"
+        )
+        return choice_manner
+
+    def display_players_by_ranking_for_a_tournament(self, choice_tournament):
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
+        player_table = db.table("player")
+        chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
+        players_for_a_tournament = []
+        for players in chooses_tournament["players"]:
+            players_for_a_tournament.append(player_table.all()[players - 1])
+        players_for_a_tournament_for_print = []
+        for player in players_for_a_tournament:
+            players_for_a_tournament_for_print.append(
+                [
+                    player["ranking"],
+                    player["last_name"],
+                    player["first_name"],
+                    player["date_of_birth"],
+                    player["gender"],
+                ]
+            )
+        players_for_a_tournament_for_print = sorted(players_for_a_tournament_for_print)
+        print(
+            tabulate(
+                players_for_a_tournament_for_print,
+                headers=[
+                    "Ranking",
+                    "First name",
+                    "Last name",
+                    "Date of birth",
+                    "Gender",
+                ],
+                tablefmt="fancy_grid",
+            )
+        )
+
+    def display_players_by_alphabetical_order_for_a_tournament(self, choice_tournament):
         db = TinyDB("db.json")
         tournament_table = db.table("tournament")
         player_table = db.table("player")
@@ -107,7 +143,9 @@ class View:
                     player["gender"],
                 ]
             )
-        players_for_a_tournament_for_print = sorted(players_for_a_tournament_for_print)
+        players_for_a_tournament_for_print = sorted(
+            players_for_a_tournament_for_print, key=lambda k: (k[0], k[1])
+        )
         print(
             tabulate(
                 players_for_a_tournament_for_print,
@@ -124,7 +162,7 @@ class View:
 
     def display_choice_tournament_for_print_rounds(self):
         choice_tournament = input(
-            "For which tournament do you want to display rounds : (choose an id)\n"
+            "For which tournament do you want to display rounds (choose an id): "
         )
         return choice_tournament
 
@@ -239,7 +277,7 @@ class View:
 
     def display_choice_tournament_for_print_matchs(self):
         choice_tournament = input(
-            "For which tournament do you want to display matchs : (choose an id)\n"
+            "For which tournament do you want to display matchs (choose an id): "
         )
         return choice_tournament
 
@@ -307,7 +345,6 @@ class View:
 
     def display_ranking_menu(self):
         """ """
-        # print("")
         menu_choice = input(
             "=========="
             "\n"
@@ -320,13 +357,12 @@ class View:
 
     def choice_player_to_change_ranking(self):
         choice_player = input(
-            "For which player do you want to change ranking : (choose an id)\n"
+            "For which player do you want to change ranking (choose an id): "
         )
         return choice_player
 
     def display_players_menu(self):
         """ """
-        # print("")
         menu_choice = input(
             "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
@@ -421,7 +457,6 @@ class View:
         for player in player_table:
             players.append(
                 [
-                    player.doc_id,
                     player["last_name"],
                     player["first_name"],
                     player["ranking"],
@@ -429,12 +464,11 @@ class View:
                     player["gender"],
                 ]
             )
-        players = sorted(players, key=lambda k: (k[1], k[2]))
+        players = sorted(players, key=lambda k: (k[0], k[1]))
         print(
             tabulate(
                 players,
                 headers=[
-                    "Id",
                     "First name",
                     "Last name",
                     "Ranking",
