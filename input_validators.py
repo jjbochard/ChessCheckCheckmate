@@ -1,15 +1,4 @@
-def is_valid_welcome_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
-    if response in ["1", "2", "3", "4", "5", "6"]:
-        return True
-    else:
-        return False
-
-
-def is_valid_welcome_menu_continue_response(response):
+def is_valid_main_menu_response(response):
     """
     Cheking if the welcome input is True or False to continue
     Otherwise the welcome message keeps repeating

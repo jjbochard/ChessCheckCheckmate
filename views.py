@@ -3,6 +3,18 @@ from tinydb import TinyDB
 
 
 class View:
+    def __init__(
+        self,
+        tournament_table=TinyDB("db.json").table("tournament"),
+        player_table=TinyDB("db.json").table("player"),
+        round_table=TinyDB("db.json").table("round"),
+        match_table=TinyDB("db.json").table("match"),
+    ):
+        self.tournament_table = tournament_table
+        self.player_table = player_table
+        self.round_table = round_table
+        self.match_table = match_table
+
     def welcome_message(self):
         """ """
         welcome_message = print(
@@ -11,34 +23,36 @@ class View:
 
         return welcome_message
 
-    def welcome_menu(self):
+    def main_menu(self):
         """ """
-        menu_choice = input(
-            "=========="
-            "\n"
-            "  1 - Start a tournament\n"
-            "  2 - Create a player\n"
-            "  3 - Change ranking\n"
-            "  4 - Display tournaments\n"
-            "  5 - Display players\n"
-            "  6 - Quit\n"
-        )
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
+        if (
+            tournament_table.all() == []
+            or tournament_table.all()[-1]["status_tournament"] == "finished"
+        ):
 
-        return menu_choice
-
-    def welcome_menu_continue(self):
-        """ """
-        menu_choice = input(
-            "=========="
-            "\n"
-            "  1 - Continue a tournament\n"
-            "  2 - Create a player\n"
-            "  3 - Change ranking\n"
-            "  4 - Display tournaments\n"
-            "  5 - Display players\n"
-            "  6 - Quit\n"
-            "  7 - Test\n"
-        )
+            menu_choice = input(
+                "=========="
+                "\n"
+                "  1 - Start a tournament\n"
+                "  2 - Create a player\n"
+                "  3 - Change ranking\n"
+                "  4 - Display tournaments\n"
+                "  5 - Display players\n"
+                "  6 - Quit\n"
+            )
+        else:
+            menu_choice = input(
+                "=========="
+                "\n"
+                "  1 - Continue a tournament\n"
+                "  2 - Create a player\n"
+                "  3 - Change ranking\n"
+                "  4 - Display tournaments\n"
+                "  5 - Display players\n"
+                "  6 - Quit\n"
+            )
 
         return menu_choice
 
@@ -91,13 +105,10 @@ class View:
         return choice_manner
 
     def display_players_by_ranking_for_a_tournament(self, choice_tournament):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
-        chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
+        chooses_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
         players_for_a_tournament = []
         for players in chooses_tournament["players"]:
-            players_for_a_tournament.append(player_table.all()[players - 1])
+            players_for_a_tournament.append(self.player_table.all()[players - 1])
         players_for_a_tournament_for_print = []
         for player in players_for_a_tournament:
             players_for_a_tournament_for_print.append(
@@ -125,13 +136,10 @@ class View:
         )
 
     def display_players_by_alphabetical_order_for_a_tournament(self, choice_tournament):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
-        chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
+        chooses_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
         players_for_a_tournament = []
         for players in chooses_tournament["players"]:
-            players_for_a_tournament.append(player_table.all()[players - 1])
+            players_for_a_tournament.append(self.player_table.all()[players - 1])
         players_for_a_tournament_for_print = []
         for player in players_for_a_tournament:
             players_for_a_tournament_for_print.append(
@@ -167,18 +175,13 @@ class View:
         return choice_tournament
 
     def display_rounds_for_a_tournament(self, choice_tournament):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
-        round_table = db.table("round")
-        match_table = db.table("match")
-        chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
+        chooses_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
         rounds_for_a_tournament = []
         matchs_for_a_tournament = []
         for round in chooses_tournament["rounds"]:
-            rounds_for_a_tournament.append(round_table.all()[round - 1])
-            for match in round_table.all()[round - 1]["list_of_match"]:
-                matchs_for_a_tournament.append(match_table.all()[match - 1])
+            rounds_for_a_tournament.append(self.round_table.all()[round - 1])
+            for match in self.round_table.all()[round - 1]["list_of_match"]:
+                matchs_for_a_tournament.append(self.match_table.all()[match - 1])
 
         rounds_for_a_tournament_for_print = []
         i = 0
@@ -197,19 +200,19 @@ class View:
                     and matchs_for_a_tournament[match - 1]["match"][1][1] == 0.0
                 ):
                     matchs_of_round.append(
-                        player_table.get(
+                        self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["last_name"]
                         + " won against "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["last_name"]
                         + "\n",
@@ -219,19 +222,19 @@ class View:
                     and matchs_for_a_tournament[match - 1]["match"][1][1] == 1.0
                 ):
                     matchs_of_round.append(
-                        player_table.get(
+                        self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["last_name"]
                         + " won against "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["last_name"]
                         + "\n",
@@ -241,19 +244,19 @@ class View:
                     and matchs_for_a_tournament[match - 1]["match"][1][1] == 0.5
                 ):
                     matchs_of_round.append(
-                        player_table.get(
+                        self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][1][0]
                         )["last_name"]
                         + " and "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["first_name"]
                         + " "
-                        + player_table.get(
+                        + self.player_table.get(
                             doc_id=matchs_for_a_tournament[match - 1]["match"][0][0]
                         )["last_name"]
                         + " drew\n",
@@ -282,55 +285,68 @@ class View:
         return choice_tournament
 
     def display_matchs_for_a_tournament(self, choice_tournament):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
-        round_table = db.table("round")
-        match_table = db.table("match")
-        chooses_tournament = tournament_table.all()[int(choice_tournament) - 1]
+        chooses_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
         matchs_for_a_tournament = []
         for round in chooses_tournament["rounds"]:
-            for match in round_table.all()[round - 1]["list_of_match"]:
-                matchs_for_a_tournament.append(match_table.all()[match - 1])
+            for match in self.round_table.all()[round - 1]["list_of_match"]:
+                matchs_for_a_tournament.append(self.match_table.all()[match - 1])
         matchs_for_a_tournament_to_print = []
         for match in matchs_for_a_tournament:
             if match["match"][0][1] == 1.0 and match["match"][1][1] == 0.0:
                 matchs_for_a_tournament_to_print.append(
                     [
                         match.doc_id,
-                        player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        self.player_table.get(doc_id=match["match"][0][0])["first_name"]
                         + " "
-                        + player_table.get(doc_id=match["match"][0][0])["last_name"]
+                        + self.player_table.get(doc_id=match["match"][0][0])[
+                            "last_name"
+                        ]
                         + " won against "
-                        + player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        + self.player_table.get(doc_id=match["match"][1][0])[
+                            "first_name"
+                        ]
                         + " "
-                        + player_table.get(doc_id=match["match"][1][0])["last_name"],
+                        + self.player_table.get(doc_id=match["match"][1][0])[
+                            "last_name"
+                        ],
                     ]
                 )
             elif match["match"][0][1] == 0.0 and match["match"][1][1] == 1.0:
                 matchs_for_a_tournament_to_print.append(
                     [
                         match.doc_id,
-                        player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
                         + " "
-                        + player_table.get(doc_id=match["match"][1][0])["last_name"]
+                        + self.player_table.get(doc_id=match["match"][1][0])[
+                            "last_name"
+                        ]
                         + " won against "
-                        + player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        + self.player_table.get(doc_id=match["match"][0][0])[
+                            "first_name"
+                        ]
                         + " "
-                        + player_table.get(doc_id=match["match"][0][0])["last_name"],
+                        + self.player_table.get(doc_id=match["match"][0][0])[
+                            "last_name"
+                        ],
                     ]
                 )
             elif match["match"][0][1] == 0.5 and match["match"][1][1] == 0.5:
                 matchs_for_a_tournament_to_print.append(
                     [
                         match.doc_id,
-                        player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
                         + " "
-                        + player_table.get(doc_id=match["match"][1][0])["last_name"]
+                        + self.player_table.get(doc_id=match["match"][1][0])[
+                            "last_name"
+                        ]
                         + " and "
-                        + player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        + self.player_table.get(doc_id=match["match"][0][0])[
+                            "first_name"
+                        ]
                         + " "
-                        + player_table.get(doc_id=match["match"][0][0])["last_name"]
+                        + self.player_table.get(doc_id=match["match"][0][0])[
+                            "last_name"
+                        ]
                         + " drew",
                     ]
                 )
@@ -375,10 +391,8 @@ class View:
 
     def display_tournaments(self):
         """ """
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
         tournaments = []
-        for tournament in tournament_table:
+        for tournament in self.tournament_table:
             tournaments.append(
                 [
                     tournament.doc_id,
@@ -408,10 +422,8 @@ class View:
 
     def display_players_by_ranking(self):
         """ """
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         players = []
-        for player in player_table:
+        for player in self.player_table:
             players.append(
                 [
                     player["ranking"],
@@ -451,10 +463,8 @@ class View:
 
     def display_players_by_alphabetical_order(self):
         """ """
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         players = []
-        for player in player_table:
+        for player in self.player_table:
             players.append(
                 [
                     player["last_name"],
@@ -493,10 +503,8 @@ class View:
 
     def display_players_by_id(self):
         """ """
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         players = []
-        for player in player_table:
+        for player in self.player_table:
             players.append(
                 [
                     player.doc_id,
@@ -555,20 +563,18 @@ class View:
 
     def display_write_score_menu(self, match):
         """ """
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         menu_choice = input(
             "\n"
             "\nWho win :\n"
             "  1 - "
-            + player_table.get(doc_id=match["match"][0][0])["first_name"]
+            + self.player_table.get(doc_id=match["match"][0][0])["first_name"]
             + " "
-            + player_table.get(doc_id=match["match"][0][0])["last_name"]
+            + self.player_table.get(doc_id=match["match"][0][0])["last_name"]
             + " win\n"
             "  2 - "
-            + player_table.get(doc_id=match["match"][1][0])["first_name"]
+            + self.player_table.get(doc_id=match["match"][1][0])["first_name"]
             + " "
-            + player_table.get(doc_id=match["match"][1][0])["last_name"]
+            + self.player_table.get(doc_id=match["match"][1][0])["last_name"]
             + " win\n"
             "  3 - Draw match\n"
         )
@@ -577,20 +583,17 @@ class View:
 
     def display_players_by_score(self):
         """ """
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
         players = []
-        for player in tournament_table.all()[-1]["players"]:
+        for player in self.tournament_table.all()[-1]["players"]:
             players.append(
                 [
-                    player_table.all()[player - 1].doc_id,
-                    player_table.all()[player - 1]["score"],
-                    player_table.all()[player - 1]["ranking"],
-                    player_table.all()[player - 1]["last_name"],
-                    player_table.all()[player - 1]["first_name"],
-                    player_table.all()[player - 1]["date_of_birth"],
-                    player_table.all()[player - 1]["gender"],
+                    self.player_table.all()[player - 1].doc_id,
+                    self.player_table.all()[player - 1]["score"],
+                    self.player_table.all()[player - 1]["ranking"],
+                    self.player_table.all()[player - 1]["last_name"],
+                    self.player_table.all()[player - 1]["first_name"],
+                    self.player_table.all()[player - 1]["date_of_birth"],
+                    self.player_table.all()[player - 1]["gender"],
                 ]
             )
         players = sorted(
@@ -627,24 +630,28 @@ class View:
         print("Player alredy choosen. Please add an other player\n")
 
     def display_match_information(self):
-        db = TinyDB("db.json")
-        player_table = db.table("player")
-        match_table = db.table("match")
-        round_table = db.table("round")
         matchs_for_a_round = []
         matchs_for_a_round_to_print = []
         black_or_white_player = []
-        for match in round_table.all()[-1]["list_of_match"]:
-            matchs_for_a_round.append(match_table.all()[match - 1])
+        for match in self.round_table.all()[-1]["list_of_match"]:
+            matchs_for_a_round.append(self.match_table.all()[match - 1])
         for match in matchs_for_a_round:
             black_or_white_player.append(
                 [
-                    str(player_table.get(doc_id=match["match"][0][0])["first_name"])
+                    str(
+                        self.player_table.get(doc_id=match["match"][0][0])["first_name"]
+                    )
                     + " "
-                    + str(player_table.get(doc_id=match["match"][0][0])["last_name"]),
-                    str(player_table.get(doc_id=match["match"][1][0])["first_name"])
+                    + str(
+                        self.player_table.get(doc_id=match["match"][0][0])["last_name"]
+                    ),
+                    str(
+                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
+                    )
                     + " "
-                    + str(player_table.get(doc_id=match["match"][1][0])["last_name"]),
+                    + str(
+                        self.player_table.get(doc_id=match["match"][1][0])["last_name"]
+                    ),
                 ]
             )
             matchs_for_a_round_to_print.append(match)

@@ -15,51 +15,30 @@ class Controller:
         self.view = view
 
     def run(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-
         """
         Loop that runs all the next
         'menu' methods from the controllers
         """
         self.view.welcome_message()
-        if (
-            tournament_table.all() == []
-            or tournament_table.all()[-1]["status_tournament"] == "finished"
-        ):
-            self.welcome_menu()
-        else:
-            self.welcome_menu_continue()
+        self.main_menu()
 
-    def welcome_menu(self):
+    def main_menu(self):
         """ """
+        db = TinyDB("db.json")
+        tournament_table = db.table("tournament")
 
         while True:
-            response = self.view.welcome_menu()
-            if input_validators.is_valid_welcome_menu_response(response):
+            response = self.view.main_menu()
+            if input_validators.is_valid_main_menu_response(response):
                 break
         if response == "1":
-            return self.create_tournament()
-        elif response == "2":
-            return self.create_player()
-        elif response == "3":
-            return self.display_change_ranking_menu()
-        elif response == "4":
-            return self.display_tournaments_menu()
-        elif response == "5":
-            return self.display_players_menu()
-        elif response == "6":
-            return self.quit()
-
-    def welcome_menu_continue(self):
-        """ """
-
-        while True:
-            response = self.view.welcome_menu_continue()
-            if input_validators.is_valid_welcome_menu_continue_response(response):
-                break
-        if response == "1":
-            return self.continue_tournament()
+            if (
+                tournament_table.all() == []
+                or tournament_table.all()[-1]["status_tournament"] == "finished"
+            ):
+                return self.create_tournament()
+            else:
+                return self.continue_tournament()
         elif response == "2":
             return self.create_player()
         elif response == "3":
@@ -88,7 +67,7 @@ class Controller:
         elif response == "4":
             return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "6":
             return self.quit()
 
@@ -122,7 +101,7 @@ class Controller:
         # elif response == "4":
         #     return self.display_change_ranking_menu()
         # elif response == "5":
-        #     return self.welcome_menu()
+        #     return self.main_menu()
         # elif response == "6":
         #     return self.quit()
 
@@ -150,7 +129,7 @@ class Controller:
         elif response == "4":
             return self.display_change_ranking_menu()
         elif response == "5":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "6":
             return self.quit()
 
@@ -168,7 +147,7 @@ class Controller:
         elif response == "3":
             return self.display_change_ranking_menu()
         elif response == "4":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "5":
             return self.quit()
 
@@ -284,7 +263,7 @@ class Controller:
         elif response == "2":
             return self.display_change_ranking_menu()
         elif response == "3":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "4":
             return self.quit()
 
@@ -303,7 +282,7 @@ class Controller:
         elif response == "2":
             return self.display_change_ranking_menu()
         elif response == "3":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "4":
             return self.quit()
 
@@ -316,7 +295,7 @@ class Controller:
         if response == "1":
             return self.change_ranking()
         elif response == "2":
-            return self.welcome_menu()
+            return self.main_menu()
 
     def display_choice_create_next_round(self):
         while True:
@@ -328,7 +307,7 @@ class Controller:
         if response == "1":
             return self.create_round()
         elif response == "2":
-            return self.welcome_menu()
+            return self.main_menu()
         elif response == "3":
             return self.quit()
 
@@ -342,7 +321,7 @@ class Controller:
         if response == "1":
             return self.end_round()
         elif response == "2":
-            return self.welcome_menu
+            return self.main_menu
         elif response == "3":
             return self.quit()
 
@@ -504,7 +483,7 @@ class Controller:
             tournament_table.all()[-1]["status_tournament"] == "finished"
             or not tournament_table.all()
         ):
-            return self.welcome_menu()
+            return self.main_menu()
         else:
             return new_player_id
 
