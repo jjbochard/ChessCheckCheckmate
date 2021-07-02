@@ -1,14 +1,18 @@
 from controllers import Controller
-from views import View
+from view.select_menu import SelectMenuView
+from view.tables import TablesView
+from view.warning import WarningView
 
 
 def main():
     """
     Run the program
     """
-    view = View()
+    select = SelectMenuView()
+    table = TablesView()
+    warning = WarningView()
 
-    program_controller = Controller(view)
+    program_controller = Controller(select, table, warning)
     program_controller.run()
 
 
