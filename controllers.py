@@ -49,15 +49,15 @@ class Controller:
                 return self.create_tournament()
             else:
                 return self.continue_tournament()
-        elif response == "2":
+        if response == "2":
             return self.create_player()
-        elif response == "3":
+        if response == "3":
             return self.display_change_ranking_menu()
-        elif response == "4":
+        if response == "4":
             return self.display_tournaments_menu()
-        elif response == "5":
+        if response == "5":
             return self.display_players_menu()
-        elif response == "6":
+        if response == "6":
             return self.quit()
 
     def display_tournaments_menu(self):
@@ -70,15 +70,15 @@ class Controller:
 
         if response == "1":
             return self.display_choice_tournament_for_print_players()
-        elif response == "2":
+        if response == "2":
             return self.display_choice_tournament_for_print_rounds()
-        elif response == "3":
+        if response == "3":
             return self.display_choice_tournament_for_print_matchs()
-        elif response == "4":
+        if response == "4":
             return self.display_change_ranking_menu()
-        elif response == "5":
+        if response == "5":
             return self.main_menu()
-        elif response == "6":
+        if response == "6":
             return self.quit()
 
     def display_choice_tournament_for_print_players(self):
@@ -92,24 +92,7 @@ class Controller:
             self.table.players_by_ranking_of_tournament(choice_tournament)
         else:
             self.table.players_by_alphabetical_order_of_tournament(choice_tournament)
-
-        # while True:
         self.display_tournaments_menu()
-        # if input_validators.is_valid_tournament_menu_response(response):
-        #     break
-
-        # if response == "1":
-        #     return self.display_choice_tournament_for_print_players()
-        # elif response == "2":
-        #     return self.display_choice_tournament_for_print_rounds()
-        # elif response == "3":
-        #     return self.display_choice_tournament_for_print_matchs()
-        # elif response == "4":
-        #     return self.display_change_ranking_menu()
-        # elif response == "5":
-        #     return self.main_menu()
-        # elif response == "6":
-        #     return self.quit()
 
     def display_choice_tournament_for_print_rounds(self):
         """ """
@@ -128,15 +111,15 @@ class Controller:
 
         if response == "1":
             return self.display_choice_tournament_for_print_players()
-        elif response == "2":
+        if response == "2":
             return self.display_choice_tournament_for_print_rounds()
-        elif response == "3":
+        if response == "3":
             return self.display_choice_tournament_for_print_matchs()
-        elif response == "4":
+        if response == "4":
             return self.display_change_ranking_menu()
-        elif response == "5":
+        if response == "5":
             return self.main_menu()
-        elif response == "6":
+        if response == "6":
             return self.quit()
 
     def display_players_menu(self):
@@ -148,13 +131,13 @@ class Controller:
 
         if response == "1":
             return self.display_players_by_ranking()
-        elif response == "2":
+        if response == "2":
             return self.display_players_by_alphabetical_order()
-        elif response == "3":
+        if response == "3":
             return self.display_change_ranking_menu()
-        elif response == "4":
+        if response == "4":
             return self.main_menu()
-        elif response == "5":
+        if response == "5":
             return self.quit()
 
     def update_score_match(self, match, response):
@@ -252,11 +235,11 @@ class Controller:
 
         if response == "1":
             return self.display_players_by_alphabetical_order()
-        elif response == "2":
+        if response == "2":
             return self.display_change_ranking_menu()
-        elif response == "3":
+        if response == "3":
             return self.main_menu()
-        elif response == "4":
+        if response == "4":
             return self.quit()
 
     def display_players_by_alphabetical_order(self):
@@ -271,22 +254,22 @@ class Controller:
 
         if response == "1":
             return self.display_players_by_ranking()
-        elif response == "2":
+        if response == "2":
             return self.display_change_ranking_menu()
-        elif response == "3":
+        if response == "3":
             return self.main_menu()
-        elif response == "4":
+        if response == "4":
             return self.quit()
 
     def display_change_ranking_menu(self):
-        self.table.players_by_alphabetical_order()
+        self.table.players_by_id()
         while True:
             response = self.select.ranking_menu()
             if input_validators.is_valid_ranking_menu_response(response):
                 break
         if response == "1":
             return self.change_ranking()
-        elif response == "2":
+        if response == "2":
             return self.main_menu()
 
     def display_choice_create_next_round(self):
@@ -298,9 +281,9 @@ class Controller:
             return self.create_round()
         if response == "2":
             return self.change_ranking()
-        elif response == "3":
+        if response == "3":
             return self.main_menu()
-        elif response == "4":
+        if response == "4":
             return self.quit()
 
     def display_choice_end_round(self):
@@ -310,9 +293,9 @@ class Controller:
                 break
         if response == "1":
             return self.end_round()
-        elif response == "2":
+        if response == "2":
             return self.main_menu()
-        elif response == "3":
+        if response == "3":
             return self.quit()
 
     def quit(self):
@@ -492,6 +475,7 @@ class Controller:
         new_ranking = self.get_input_new_ranking()
         contains_duplicates = self.check_same_ranking()
         while contains_duplicates is True:
+            self.table.players_by_id()
             self.warning.players_same_ranking(new_ranking)
             new_ranking = self.get_input_new_ranking()
             contains_duplicates = self.check_same_ranking()
