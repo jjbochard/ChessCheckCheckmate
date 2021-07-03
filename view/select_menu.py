@@ -130,14 +130,14 @@ class SelectMenuView:
             "\n"
             "\nWho win :\n"
             "  1 - "
-            + self.player_table.get(doc_id=match["match"][0][0])["first_name"]
+            + self.player_table.get(doc_id=match["player_1"])["first_name"]
             + " "
-            + self.player_table.get(doc_id=match["match"][0][0])["last_name"]
+            + self.player_table.get(doc_id=match["player_1"])["last_name"]
             + " win\n"
             "  2 - "
-            + self.player_table.get(doc_id=match["match"][1][0])["first_name"]
+            + self.player_table.get(doc_id=match["player_2"])["first_name"]
             + " "
-            + self.player_table.get(doc_id=match["match"][1][0])["last_name"]
+            + self.player_table.get(doc_id=match["player_2"])["last_name"]
             + " win\n"
             "  3 - Draw match\n"
         )

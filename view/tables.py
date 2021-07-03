@@ -189,68 +189,68 @@ class TablesView:
             matchs_of_round = []
             for match in round["list_of_match"]:
                 if (
-                    matchs_of_tournament[match - 1]["match"][0][1] == 1.0
-                    and matchs_of_tournament[match - 1]["match"][1][1] == 0.0
+                    matchs_of_tournament[match - 1]["score_player_1"] == 1.0
+                    and matchs_of_tournament[match - 1]["score_player_2"] == 0.0
                 ):
                     matchs_of_round.append(
                         self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["last_name"]
                         + " won against "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["last_name"]
                         + "\n",
                     )
                 elif (
-                    matchs_of_tournament[match - 1]["match"][0][1] == 0.0
-                    and matchs_of_tournament[match - 1]["match"][1][1] == 1.0
+                    matchs_of_tournament[match - 1]["score_player_1"] == 0.0
+                    and matchs_of_tournament[match - 1]["score_player_2"] == 1.0
                 ):
                     matchs_of_round.append(
                         self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["last_name"]
                         + " won against "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["last_name"]
                         + "\n",
                     )
                 elif (
-                    matchs_of_tournament[match - 1]["match"][0][1] == 0.5
-                    and matchs_of_tournament[match - 1]["match"][1][1] == 0.5
+                    matchs_of_tournament[match - 1]["score_player_1"] == 0.5
+                    and matchs_of_tournament[match - 1]["score_player_2"] == 0.5
                 ):
                     matchs_of_round.append(
                         self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][1][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_2"]
                         )["last_name"]
                         + " and "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["first_name"]
                         + " "
                         + self.player_table.get(
-                            doc_id=matchs_of_tournament[match - 1]["match"][0][0]
+                            doc_id=matchs_of_tournament[match - 1]["player_1"]
                         )["last_name"]
                         + " drew\n",
                     )
@@ -279,61 +279,43 @@ class TablesView:
                 matchs_of_tournament.append(self.match_table.all()[match - 1])
         matchs_of_tournament_to_print = []
         for match in matchs_of_tournament:
-            if match["match"][0][1] == 1.0 and match["match"][1][1] == 0.0:
+            if match["score_player_1"] == 1.0 and match["score_player_2"] == 0.0:
                 matchs_of_tournament_to_print.append(
                     [
                         match.doc_id,
-                        self.player_table.get(doc_id=match["match"][0][0])["first_name"]
+                        self.player_table.get(doc_id=match["player_1"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][0][0])[
-                            "last_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_1"])["last_name"]
                         + " won against "
-                        + self.player_table.get(doc_id=match["match"][1][0])[
-                            "first_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_2"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][1][0])[
-                            "last_name"
-                        ],
+                        + self.player_table.get(doc_id=match["player_2"])["last_name"],
                     ]
                 )
-            elif match["match"][0][1] == 0.0 and match["match"][1][1] == 1.0:
+            elif match["score_player_1"] == 0.0 and match["score_player_2"] == 1.0:
                 matchs_of_tournament_to_print.append(
                     [
                         match.doc_id,
-                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        self.player_table.get(doc_id=match["player_2"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][1][0])[
-                            "last_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_2"])["last_name"]
                         + " won against "
-                        + self.player_table.get(doc_id=match["match"][0][0])[
-                            "first_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_1"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][0][0])[
-                            "last_name"
-                        ],
+                        + self.player_table.get(doc_id=match["player_1"])["last_name"],
                     ]
                 )
-            elif match["match"][0][1] == 0.5 and match["match"][1][1] == 0.5:
+            elif match["score_player_1"] == 0.5 and match["score_player_2"] == 0.5:
                 matchs_of_tournament_to_print.append(
                     [
                         match.doc_id,
-                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
+                        self.player_table.get(doc_id=match["player_2"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][1][0])[
-                            "last_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_2"])["last_name"]
                         + " and "
-                        + self.player_table.get(doc_id=match["match"][0][0])[
-                            "first_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_1"])["first_name"]
                         + " "
-                        + self.player_table.get(doc_id=match["match"][0][0])[
-                            "last_name"
-                        ]
+                        + self.player_table.get(doc_id=match["player_1"])["last_name"]
                         + " drew",
                     ]
                 )
@@ -386,20 +368,12 @@ class TablesView:
         for match in matchs_of_round:
             black_or_white_player.append(
                 [
-                    str(
-                        self.player_table.get(doc_id=match["match"][0][0])["first_name"]
-                    )
+                    str(self.player_table.get(doc_id=match["player_1"])["first_name"])
                     + " "
-                    + str(
-                        self.player_table.get(doc_id=match["match"][0][0])["last_name"]
-                    ),
-                    str(
-                        self.player_table.get(doc_id=match["match"][1][0])["first_name"]
-                    )
+                    + str(self.player_table.get(doc_id=match["player_1"])["last_name"]),
+                    str(self.player_table.get(doc_id=match["player_2"])["first_name"])
                     + " "
-                    + str(
-                        self.player_table.get(doc_id=match["match"][1][0])["last_name"]
-                    ),
+                    + str(self.player_table.get(doc_id=match["player_2"])["last_name"]),
                 ]
             )
             matchs_of_round_to_print.append(match)

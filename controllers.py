@@ -1,6 +1,5 @@
 import collections
 import json
-import random
 from datetime import datetime
 
 from tinydb import Query, TinyDB
@@ -10,11 +9,23 @@ from model import Match, Player, Round, Tournament
 
 
 class Controller:
-    def __init__(self, select, table, warning):
-        """ """
+    def __init__(
+        self,
+        select,
+        table,
+        warning,
+        tournament_table=TinyDB("db.json").table("tournament"),
+        player_table=TinyDB("db.json").table("player"),
+        round_table=TinyDB("db.json").table("round"),
+        match_table=TinyDB("db.json").table("match"),
+    ):
         self.select = select
         self.table = table
         self.warning = warning
+        self.tournament_table = tournament_table
+        self.player_table = player_table
+        self.round_table = round_table
+        self.match_table = match_table
 
     def run(self):
         """
@@ -26,17 +37,14 @@ class Controller:
 
     def main_menu(self):
         """ """
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-
         while True:
             response = self.select.main_menu()
             if input_validators.is_valid_main_menu_response(response):
                 break
         if response == "1":
             if (
-                tournament_table.all() == []
-                or tournament_table.all()[-1]["status_tournament"] == "finished"
+                self.tournament_table.all() == []
+                or self.tournament_table.all()[-1]["status_tournament"] == "finished"
             ):
                 return self.create_tournament()
             else:
@@ -149,102 +157,90 @@ class Controller:
         elif response == "5":
             return self.quit()
 
-    def write_score_menu(self, match):
-        db = TinyDB("db.json")
+    def update_score_match(self, match, response):
+        if response == "1":
+            self.match_table.update(
+                {"score_player_1": 1.0},
+                doc_ids=[match.doc_id],
+            )
+            self.match_table.update(
+                {"score_player_2": 0.0},
+                doc_ids=[match.doc_id],
+            )
+        elif response == "2":
+            self.match_table.update(
+                {"score_player_1": 0.0},
+                doc_ids=[match.doc_id],
+            )
+            self.match_table.update(
+                {"score_player_2": 1.0},
+                doc_ids=[match.doc_id],
+            )
+        elif response == "3":
+            self.match_table.update(
+                {"score_player_1": 0.5},
+                doc_ids=[match.doc_id],
+            )
+            self.match_table.update(
+                {"score_player_2": 0.5},
+                doc_ids=[match.doc_id],
+            )
 
-        match_table = db.table("match")
-        player_table = db.table("player")
+    def update_score_player(self, match, response):
+        if response == "1":
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_1"]) - 1]["score"]
+                    + 1.0
+                },
+                doc_ids=[(self.player_table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_2"]) - 1]["score"]
+                    + 0.0
+                },
+                doc_ids=[(self.player_table.all()[(match["player_2"]) - 1]).doc_id],
+            )
+        if response == "2":
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_1"]) - 1]["score"]
+                    + 0.0
+                },
+                doc_ids=[(self.player_table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_2"]) - 1]["score"]
+                    + 1.0
+                },
+                doc_ids=[(self.player_table.all()[(match["player_2"]) - 1]).doc_id],
+            )
+        if response == "3":
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_1"]) - 1]["score"]
+                    + 0.5
+                },
+                doc_ids=[(self.player_table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            self.player_table.update(
+                {
+                    "score": self.player_table.all()[(match["player_2"]) - 1]["score"]
+                    + 0.5
+                },
+                doc_ids=[(self.player_table.all()[(match["player_2"]) - 1]).doc_id],
+            )
 
+    def update_scores(self, match):
         """ """
-
         while True:
             response = self.select.write_score_menu(match)
             if input_validators.is_valid_write_score_menu_response(response):
                 break
-        update_match = match
-        if response == "1":
-            update_match["match"][0][1] = 1.0
-            update_match["match"][1][1] = 0.0
-
-            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][0][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
-                ],
-            )
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][1][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
-                ],
-            )
-
-        elif response == "2":
-            update_match["match"][0][1] = 0.0
-            update_match["match"][1][1] = 1.0
-
-            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][0][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
-                ],
-            )
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][1][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
-                ],
-            )
-
-        elif response == "3":
-            update_match["match"][0][1] = 0.5
-            update_match["match"][1][1] = 0.5
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][0][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][0][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][0][0]) - 1]).doc_id
-                ],
-            )
-            player_table.update(
-                {
-                    "score": player_table.all()[(update_match["match"][1][0]) - 1][
-                        "score"
-                    ]
-                    + update_match["match"][1][1]
-                },
-                doc_ids=[
-                    (player_table.all()[(update_match["match"][1][0]) - 1]).doc_id
-                ],
-            )
-
-            match_table.update({"match": update_match["match"]}, doc_ids=[match.doc_id])
+        self.update_score_match(match, response)
+        self.update_score_player(match, response)
 
     def display_players_by_ranking(self):
         """ """
@@ -327,16 +323,12 @@ class Controller:
         return True
 
     def create_tournament(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        round_table = db.table("round")
-        match_table = db.table("match")
         new_tournament = Tournament.create_tournament()
         serialized_tournament = vars(new_tournament)
-        tournament_table.insert(serialized_tournament)
+        self.tournament_table.insert(serialized_tournament)
 
         self.add_players_to_tournament()
-        while tournament_table.all()[-1]["status_tournament"] != "finished":
+        while self.tournament_table.all()[-1]["status_tournament"] != "finished":
             quit_before_create_round = self.display_choice_create_next_round()
             if quit_before_create_round is True:
                 break
@@ -345,22 +337,17 @@ class Controller:
                 break
             j = -4
             while j < 0:
-                self.write_score_menu(match_table.all()[j])
+                self.update_scores(self.match_table.all()[j])
                 j += 1
             self.table.players_by_score()
-            if round_table.all()[-1]["current_round"] == 4:
+            if self.round_table.all()[-1]["current_round"] == 4:
                 self.create_end_tournament()
 
     def continue_tournament(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        round_table = db.table("round")
-        match_table = db.table("match")
-
-        while tournament_table.all()[-1]["status_tournament"] != "finished":
+        while self.tournament_table.all()[-1]["status_tournament"] != "finished":
             if (
-                round_table.all() == []
-                or round_table.all()[-1]["status_round"] == "finished"
+                self.round_table.all() == []
+                or self.round_table.all()[-1]["status_round"] == "finished"
             ):
                 quit_before_create_round = self.display_choice_create_next_round()
                 if quit_before_create_round is True:
@@ -370,10 +357,10 @@ class Controller:
                     break
                 j = -4
                 while j < 0:
-                    self.write_score_menu(match_table.all()[j])
+                    self.update_scores(self.match_table.all()[j])
                     j += 1
                 self.table.players_by_score()
-                if round_table.all()[-1]["current_round"] == 4:
+                if self.round_table.all()[-1]["current_round"] == 4:
                     self.create_end_tournament()
 
             else:
@@ -383,10 +370,10 @@ class Controller:
 
                 j = -4
                 while j < 0:
-                    self.write_score_menu(match_table.all()[j])
+                    self.update_scores(self.match_table.all()[j])
                     j += 1
                 self.table.players_by_score()
-                if round_table.all()[-1]["current_round"] == 4:
+                if self.round_table.all()[-1]["current_round"] == 4:
                     self.create_end_tournament()
                 else:
                     quit_before_create_round = self.display_choice_create_next_round()
@@ -394,14 +381,11 @@ class Controller:
                         break
 
     def add_players_to_tournament(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
         list_of_players = [1, 2, 3, 4, 5, 6, 7, 8]
         # number_of_player = 0
         # list_of_players_added = []
         # list_of_remaining_players = []
-        # for player in player_table:
+        # for player in self.player_table:
         #     list_of_remaining_players.append(
         #         [
         #             player.doc_id,
@@ -448,63 +432,56 @@ class Controller:
         #     )
         #     for player in tournament_table.all()[-1]["players"]:
         #         player_table.update(
-        #             {"score": 0},
+        #             {"score": 0.0},
         #             doc_ids=[player_table.all()[player - 1].doc_id],
         #         )
         #     for player in list_of_remaining_players:
         #         if player[0] == existed_player_id:
         #             list_of_remaining_players.remove(player)
-        tournament_table.update(
+        self.tournament_table.update(
             {"players": list_of_players},
-            doc_ids=[tournament_table.all()[-1].doc_id],
+            doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
-        for player in tournament_table.all()[-1]["players"]:
-            player_table.update(
+        for player in self.tournament_table.all()[-1]["players"]:
+            self.player_table.update(
                 {"score": 0},
-                doc_ids=[player_table.all()[player - 1].doc_id],
+                doc_ids=[self.player_table.all()[player - 1].doc_id],
             )
 
     def create_player(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
         new_player = Player.create_player()
         serialized_player = vars(new_player)
-        player_table.insert(serialized_player)
-        new_player_id = player_table.all()[-1].doc_id
+        self.player_table.insert(serialized_player)
+        new_player_id = self.player_table.all()[-1].doc_id
         if (
-            tournament_table.all()[-1]["status_tournament"] == "finished"
-            or not tournament_table.all()
+            self.tournament_table.all()[-1]["status_tournament"] == "finished"
+            or not self.tournament_table.all()
         ):
             return self.main_menu()
         else:
             return new_player_id
 
     def get_input_new_ranking(self):
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         id_player = int(self.select.change_ranking())
         new_ranking = int(
             input(
                 "Enter a new ranking for "
                 + str(
-                    player_table.all()[id_player - 1]["first_name"]
+                    self.player_table.all()[id_player - 1]["first_name"]
                     + " "
-                    + str(player_table.all()[id_player - 1]["last_name"] + "\n")
+                    + str(self.player_table.all()[id_player - 1]["last_name"] + "\n")
                 )
             )
         )
-        player_table.update(
+        self.player_table.update(
             {"ranking": new_ranking},
-            doc_ids=[player_table.all()[id_player - 1].doc_id],
+            doc_ids=[self.player_table.all()[id_player - 1].doc_id],
         )
         return new_ranking
 
     def check_same_ranking(self):
-        db = TinyDB("db.json")
-        player_table = db.table("player")
         players_ranking = []
-        for player in player_table:
+        for player in self.player_table:
             players_ranking.append(player["ranking"])
         contains_duplicates = any(
             players_ranking.count(element) > 1 for element in players_ranking
@@ -521,86 +498,82 @@ class Controller:
         return self.display_change_ranking_menu()
 
     def end_round(self):
-        db = TinyDB("db.json")
-        round_table = db.table("round")
-        round_table.update(
+        self.round_table.update(
             {"status_round": "finished"},
-            doc_ids=[round_table.all()[-1].doc_id],
+            doc_ids=[self.round_table.all()[-1].doc_id],
         )
-        round_table.update(
+        self.round_table.update(
             {
                 "end_date": json.dumps(
                     datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
                 )
             },
-            doc_ids=[round_table.all()[-1].doc_id],
+            doc_ids=[self.round_table.all()[-1].doc_id],
         )
 
     def create_round(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        player_table = db.table("player")
-        round_table = db.table("round")
-        match_table = db.table("match")
         new_round = Round.create_round()
         serialized_round = vars(new_round)
-        if round_table.all() == [] or round_table.all()[-1]["current_round"] == 4:
-            round_table.insert(serialized_round)
+        if (
+            self.round_table.all() == []
+            or self.round_table.all()[-1]["current_round"] == 4
+        ):
+            self.round_table.insert(serialized_round)
             list_ranking_player = []
             new_matchs_id = []
-            for player in tournament_table.all()[-1]["players"]:
-                list_ranking_player.append((player_table.get(doc_id=player)))
+            for player in self.tournament_table.all()[-1]["players"]:
+                list_ranking_player.append((self.player_table.get(doc_id=player)))
             list_of_players_by_ranking = Player.make_list_of_players_by_ranking(
                 self, list_ranking_player
             )
             Play = Query()
             for i in range(4):
-                new_match = self.generate_color_player(
-                    player_table.get(
+                new_match = Match.create_match(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_ranking[0][i]["ranking"]
                     ).doc_id,
-                    player_table.get(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_ranking[1][i]["ranking"]
                     ).doc_id,
                 )
                 serialized_match = vars(new_match)
-                match_table.insert(serialized_match)
-                new_matchs_id.append(match_table.all()[-1].doc_id)
-            list_of_rounds = tournament_table.all()[-1]["rounds"]
-            list_of_rounds.append(round_table.all()[-1].doc_id)
-            round_table.update(
+                self.match_table.insert(serialized_match)
+                new_matchs_id.append(self.match_table.all()[-1].doc_id)
+            list_of_rounds = self.tournament_table.all()[-1]["rounds"]
+            list_of_rounds.append(self.round_table.all()[-1].doc_id)
+            self.round_table.update(
                 {"list_of_match": new_matchs_id},
-                doc_ids=[round_table.all()[-1].doc_id],
+                doc_ids=[self.round_table.all()[-1].doc_id],
             )
-            tournament_table.update(
+            self.tournament_table.update(
                 {"rounds": list_of_rounds},
-                doc_ids=[tournament_table.all()[-1].doc_id],
+                doc_ids=[self.tournament_table.all()[-1].doc_id],
             )
-            self.warning.round_create(str(round_table.all()[-1]["current_round"]))
+            self.warning.round_create(str(self.round_table.all()[-1]["current_round"]))
             self.table.matchs()
 
         else:
             serialized_round["current_round"] = (
-                round_table.all()[-1]["current_round"] + 1
+                self.round_table.all()[-1]["current_round"] + 1
             )
             serialized_round["name"] = "Round " + str(serialized_round["current_round"])
 
-            round_table.insert(serialized_round)
+            self.round_table.insert(serialized_round)
 
             list_score_player = []
             new_matchs_id = []
-            for player in tournament_table.all()[-1]["players"]:
-                list_score_player.append((player_table.get(doc_id=player)))
+            for player in self.tournament_table.all()[-1]["players"]:
+                list_score_player.append((self.player_table.get(doc_id=player)))
             list_of_players_by_score = Player.make_list_of_players_by_score(
                 self, list_score_player
             )
             all_matchs_of_a_tournament = []
-            for rounds in tournament_table.all()[-1]["rounds"]:
-                for matchs in round_table.all()[rounds - 1]["list_of_match"]:
+            for rounds in self.tournament_table.all()[-1]["rounds"]:
+                for matchs in self.round_table.all()[rounds - 1]["list_of_match"]:
                     all_matchs_of_a_tournament.append(
                         [
-                            match_table.all()[matchs - 1]["match"][0][0],
-                            match_table.all()[matchs - 1]["match"][1][0],
+                            self.match_table.all()[matchs - 1]["player_1"],
+                            self.match_table.all()[matchs - 1]["player_2"],
                         ]
                     )
             Play = Query()
@@ -609,20 +582,20 @@ class Controller:
                 k = 1
                 exist = self.check_match_already_play(
                     all_matchs_of_a_tournament,
-                    player_table.get(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_score[j]["ranking"]
                     ).doc_id,
-                    player_table.get(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_score[j + 1]["ranking"]
                     ).doc_id,
                 )
                 while exist is True:
                     exist = self.check_match_already_play(
                         all_matchs_of_a_tournament,
-                        player_table.get(
+                        self.player_table.get(
                             Play.ranking == list_of_players_by_score[j]["ranking"]
                         ).doc_id,
-                        player_table.get(
+                        self.player_table.get(
                             Play.ranking
                             == list_of_players_by_score[j + 1 + k]["ranking"]
                         ).doc_id,
@@ -637,43 +610,35 @@ class Controller:
                     )
                     k += 1
 
-                new_match = self.generate_color_player(
-                    player_table.get(
+                new_match = Match.create_match(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_score[j]["ranking"]
                     ).doc_id,
-                    player_table.get(
+                    self.player_table.get(
                         Play.ranking == list_of_players_by_score[j + 1]["ranking"]
                     ).doc_id,
                 )
                 serialized_match = vars(new_match)
-                match_table.insert(serialized_match)
-                new_matchs_id.append(match_table.all()[-1].doc_id)
+                self.match_table.insert(serialized_match)
+                new_matchs_id.append(self.match_table.all()[-1].doc_id)
                 j += 2
-            list_of_rounds = tournament_table.all()[-1]["rounds"]
-            list_of_rounds.append(round_table.all()[-1].doc_id)
-            round_table.update(
+            list_of_rounds = self.tournament_table.all()[-1]["rounds"]
+            list_of_rounds.append(self.round_table.all()[-1].doc_id)
+            self.round_table.update(
                 {"list_of_match": new_matchs_id},
-                doc_ids=[round_table.all()[-1].doc_id],
+                doc_ids=[self.round_table.all()[-1].doc_id],
             )
 
-            tournament_table.update(
+            self.tournament_table.update(
                 {"rounds": list_of_rounds},
-                doc_ids=[tournament_table.all()[-1].doc_id],
+                doc_ids=[self.tournament_table.all()[-1].doc_id],
             )
-            self.warning.round_create(str(round_table.all()[-1]["current_round"]))
+            self.warning.round_create(str(self.round_table.all()[-1]["current_round"]))
             self.table.matchs()
 
     def choice_player_for_add_player_to_a_tournament(self):
         choice_player = self.select.add_player()
         return choice_player
-
-    def generate_color_player(self, player_1, player_2):
-        black_or_white = random.randrange(2)
-        if black_or_white == 0:
-            new_match = Match(player_1, player_2)
-        else:
-            new_match = Match(player_2, player_1)
-        return new_match
 
     def check_match_already_play(self, list_match, id1, id2):
         exist = False
@@ -683,17 +648,15 @@ class Controller:
         return exist
 
     def create_end_tournament(self):
-        db = TinyDB("db.json")
-        tournament_table = db.table("tournament")
-        tournament_table.update(
+        self.tournament_table.update(
             {
                 "end_date": json.dumps(
                     datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
                 )
             },
-            doc_ids=[tournament_table.all()[-1].doc_id],
+            doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
-        tournament_table.update(
+        self.tournament_table.update(
             {"status_tournament": "finished"},
-            doc_ids=[tournament_table.all()[-1].doc_id],
+            doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
