@@ -632,6 +632,7 @@ class Controller:
         return exist
 
     def create_end_tournament(self):
+        self.warning.tournament_winner()
         self.tournament_table.update(
             {
                 "end_date": json.dumps(

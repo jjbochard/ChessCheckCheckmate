@@ -21,7 +21,6 @@ class SelectMenuView:
             or self.tournament_table.all()[-1]["status_tournament"] == "finished"
         ):
             menu_choice = input(
-                "=========="
                 "\n"
                 "  1 - Start a tournament\n"
                 "  2 - Create a player\n"
@@ -32,7 +31,6 @@ class SelectMenuView:
             )
         else:
             menu_choice = input(
-                "=========="
                 "\n"
                 "  1 - Continue a tournament\n"
                 "  2 - Create a player\n"
@@ -105,7 +103,6 @@ class SelectMenuView:
     def ranking_menu(self):
         """ """
         menu_choice = input(
-            "=========="
             "\n"
             "\nWhat do you want to do :\n"
             "  1 - Change ranking\n"
