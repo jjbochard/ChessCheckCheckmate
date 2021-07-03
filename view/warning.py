@@ -1,19 +1,4 @@
-from tinydb import TinyDB
-
-
 class WarningView:
-    def __init__(
-        self,
-        tournament_table=TinyDB("db.json").table("tournament"),
-        player_table=TinyDB("db.json").table("player"),
-        round_table=TinyDB("db.json").table("round"),
-        match_table=TinyDB("db.json").table("match"),
-    ):
-        self.tournament_table = tournament_table
-        self.player_table = player_table
-        self.round_table = round_table
-        self.match_table = match_table
-
     def welcome_message(self):
         """ """
         welcome_message = print(
