@@ -645,3 +645,4 @@ class Controller:
             {"status_tournament": "finished"},
             doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
+        self.select.main_menu()
