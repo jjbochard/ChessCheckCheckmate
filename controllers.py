@@ -364,63 +364,64 @@ class Controller:
                         break
 
     def add_players_to_tournament(self):
-        list_of_players = [1, 2, 3, 4, 5, 6, 7, 8]
-        # number_of_player = 0
-        # list_of_players_added = []
-        # list_of_remaining_players = []
-        # for player in self.player_table:
-        #     list_of_remaining_players.append(
-        #         [
-        #             player.doc_id,
-        #             player["last_name"],
-        #             player["first_name"],
-        #             player["ranking"],
-        #             player["date_of_birth"],
-        #             player["gender"],
-        #         ]
-        #     )
-        # while number_of_player < 8:
-        #     self.table.remaining_players(list_of_remaining_players)
-        #     self.warning.remaining_players_to_add(number_of_player)
-        #     while True:
-        #         response = self.select.add_player_create_tournament_menu()
-        #         if input_validators.is_valid_display_add_player_create_tournament_menu_response(
-        #             response
-        #         ):
-        #             break
-        #     if response == "1":
-        #         existed_player_id = int(
-        #             self.choice_player_for_add_player_to_a_tournament()
-        #         )
-        #         list_of_players_added.append(existed_player_id)
-        #     elif response == "2":
-        #         new_player_id = self.create_player()
-        #         list_of_players_added.append(new_player_id)
+        list_of_players = []
+        number_of_player = 0
+        list_of_players_added = []
+        list_of_remaining_players = []
+        for player in self.player_table:
+            list_of_remaining_players.append(
+                [
+                    player.doc_id,
+                    player["last_name"],
+                    player["first_name"],
+                    player["ranking"],
+                    player["date_of_birth"],
+                    player["gender"],
+                ]
+            )
+        while number_of_player < 8:
+            self.table.remaining_players(list_of_remaining_players)
+            self.warning.remaining_players_to_add(number_of_player)
+            while True:
+                response = self.select.add_player_create_tournament_menu()
+                if input_validators.is_valid_add_player_create_tournament_menu_response(
+                    response
+                ):
+                    break
+            if response == "1":
+                existed_player_id = int(
+                    self.choice_player_for_add_player_to_a_tournament()
+                )
+                list_of_players_added.append(existed_player_id)
+            elif response == "2":
+                new_player_id = self.create_player()
+                existed_player_id = new_player_id
+                list_of_players_added.append(new_player_id)
 
-        #     number_of_player += 1
+            number_of_player += 1
 
-        #     contains_duplicates = any(
-        #         list_of_players_added.count(element) > 1
-        #         for element in list_of_players_added
-        #     )
-        #     if contains_duplicates is True:
-        #         list_of_players_added.pop(-1)
-        #         number_of_player -= 1
-        #         self.warning.add_a_player_several_time()
-        #         continue
+            contains_duplicates = any(
+                list_of_players_added.count(element) > 1
+                for element in list_of_players_added
+            )
+            if contains_duplicates is True:
+                list_of_players_added.pop(-1)
+                number_of_player -= 1
+                self.warning.add_a_player_several_time()
+                continue
 
-        #     tournament_table.update(
-        #         {"players": list_of_players_added},
-        #         doc_ids=[tournament_table.all()[-1].doc_id],
-        #     )
-        #     for player in tournament_table.all()[-1]["players"]:
-        #         player_table.update(
-        #             {"score": 0.0},
-        #             doc_ids=[player_table.all()[player - 1].doc_id],
-        #         )
-        #     for player in list_of_remaining_players:
-        #         if player[0] == existed_player_id:
-        #             list_of_remaining_players.remove(player)
+            self.tournament_table.update(
+                {"players": list_of_players_added},
+                doc_ids=[self.tournament_table.all()[-1].doc_id],
+            )
+            for player in self.tournament_table.all()[-1]["players"]:
+                self.player_table.update(
+                    {"score": 0.0},
+                    doc_ids=[self.player_table.all()[player - 1].doc_id],
+                )
+            for player in list_of_remaining_players:
+                if player[0] == existed_player_id:
+                    list_of_remaining_players.remove(player)
         self.tournament_table.update(
             {"players": list_of_players},
             doc_ids=[self.tournament_table.all()[-1].doc_id],
@@ -432,17 +433,19 @@ class Controller:
             )
 
     def create_player(self):
-        new_player = Player.create_player()
+        new_player = Player.create_player(self.player_table)
         serialized_player = vars(new_player)
         self.player_table.insert(serialized_player)
         new_player_id = self.player_table.all()[-1].doc_id
-        if (
-            self.tournament_table.all()[-1]["status_tournament"] == "finished"
-            or not self.tournament_table.all()
-        ):
+        if not self.tournament_table.all():
             return self.main_menu()
-        else:
+        if (
+            self.tournament_table.all()[-1]["status_tournament"] == "pending"
+            or self.round_table.all()[-1]["status_round"] == "finished"
+        ):
             return new_player_id
+        else:
+            return self.main_menu()
 
     def get_input_new_ranking(self):
         id_player = int(self.select.change_ranking())

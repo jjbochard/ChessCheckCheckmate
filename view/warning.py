@@ -14,14 +14,13 @@ class WarningView:
 
     def welcome_message(self):
         """ """
-        welcome_message = print("\n" "Welcome to Ultimate Chess Manager" "\n")
-        return welcome_message
+        print("\n" "Welcome to Ultimate Chess Manager" "\n")
 
     def remaining_players_to_add(self, number_of_player):
         print("\n" + str(8 - number_of_player) + " players remaining\n")
 
     def add_a_player_several_time(self):
-        print("Player alredy choosen. Please add an other player\n")
+        print("Player already choosen. Please add an other player\n")
 
     def round_create(self, round_number):
         print("Round " + str(round_number) + " has been created")
