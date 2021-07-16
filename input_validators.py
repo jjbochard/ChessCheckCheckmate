@@ -1,130 +1,121 @@
+from tinydb import TinyDB
+
+from model import Player, Tournament
+
+
 def is_valid_main_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4", "5", "6"]:
         return True
-    else:
-        return False
 
 
 def is_valid_tournament_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4", "5", "6"]:
         return True
-    else:
-        return False
 
 
 def is_valid_next_round_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4"]:
         return True
-    else:
-        return False
 
 
 def is_valid_end_round_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3"]:
         return True
-    else:
-        return False
 
 
 def is_valid_print_players_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2"]:
         return True
-    else:
-        return False
 
 
 def is_valid_players_by_ranking_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4"]:
         return True
-    else:
-        return False
 
 
 def is_valid_players_by_alphabetical_order_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4"]:
         return True
-    else:
-        return False
 
 
 def is_valid_ranking_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2"]:
         return True
-    else:
-        return False
 
 
 def is_valid_players_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3", "4", "5"]:
         return True
-    else:
-        return False
 
 
 def is_valid_write_score_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3"]:
         return True
-    else:
-        return False
 
 
 def is_valid_add_player_create_tournament_menu_response(response):
-    """
-    Cheking if the welcome input is True or False to continue
-    Otherwise the welcome message keeps repeating
-    """
     if response in ["1", "2", "3"]:
         return True
+
+
+def is_valid_time_control(response):
+    if response not in ["Blitz", "Bullet", "Rapid"]:
+        print("Time control must be Blitz, Bullet or Rapid")
     else:
-        return False
+        return True
 
 
-# def is_valid_display_tournaments_response(response):
-#     """
-#     Cheking if the welcome input is True or False to continue
-#     Otherwise the welcome message keeps repeating
-#     """
-#     if response in ["1", "2", "3", "4", "5"]:
-#         return True
-#     else:
-#         return False
+def is_valid_gender(response):
+    if response not in ["Female", "Male"]:
+        print("Gender must be Female or Male")
+    else:
+        return True
+
+
+def is_valid_id_player(response):
+    list_players = Player.get_players(TinyDB("db.json").table("player"))
+    if response not in list_players:
+        print("Invalid player Id")
+    else:
+        return True
+
+
+def is_valid_id_tournament(response):
+    list_tournaments = Tournament.get_tournaments(TinyDB("db.json").table("tournament"))
+    if response not in list_tournaments:
+        print("Invalid tournamanet Id")
+    else:
+        return True
+
+
+def is_unused_ranking(response):
+    list_rankings = Player.get_rankings(TinyDB("db.json").table("player"))
+    list_rankings.append(response)
+    contains_duplicates = any(
+        list_rankings.count(element) > 1 for element in list_rankings
+    )
+    if contains_duplicates is True:
+        print("Ranking already choosen")
+    else:
+        return True
+
+
+def is_not_already_added_player(
+    first_name_response, last_name_response, date_of_birth_response
+):
+    list_full_name, list_date_of_birth = Player.get_full_name_and_date_of_birth(
+        TinyDB("db.json").table("player")
+    )
+    new_fullname = "%s %s" % (first_name_response, last_name_response)
+    new_date_of_birth = date_of_birth_response
+    date_of_birth_of_full_name_duplicate = Player.check_full_name_duplicate(
+        new_fullname, list_full_name, list_date_of_birth
+    )
+    if date_of_birth_of_full_name_duplicate == []:
+        return True
+    else:
+        for date in date_of_birth_of_full_name_duplicate:
+            if Player.check_date_duplicate(new_date_of_birth, date) is True:
+                print("Player already exist")
+            else:
+                return True

@@ -15,7 +15,6 @@ class SelectMenuView:
         self.match_table = match_table
 
     def main_menu(self):
-        """ """
         if (
             self.tournament_table.all() == []
             or self.tournament_table.all()[-1]["status_tournament"] == "finished"
@@ -42,7 +41,6 @@ class SelectMenuView:
         return menu_choice
 
     def tournament_menu(self):
-        """ """
         menu_choice = input(
             "  1 - Display tournament's players\n"
             "  2 - Display tournament's rounds\n"
@@ -54,7 +52,6 @@ class SelectMenuView:
         return menu_choice
 
     def next_round_menu(self):
-        """ """
         menu_choice = input(
             "\n"
             "  1 - Create next round\n"
@@ -65,7 +62,6 @@ class SelectMenuView:
         return menu_choice
 
     def end_round_menu(self):
-        """ """
         menu_choice = input(
             "\n" "  1 - End round\n" "  2 - Go to main menu\n" "  3 - Quit\n"
         )
@@ -80,7 +76,6 @@ class SelectMenuView:
         return choice_manner
 
     def players_by_ranking_menu(self):
-        """ """
         menu_choice = input(
             "  1 - Display players by alphabetical order\n"
             "  2 - Change ranking\n"
@@ -90,8 +85,6 @@ class SelectMenuView:
         return menu_choice
 
     def players_by_alphabetical_order_menu(self):
-        """ """
-        # print("")
         menu_choice = input(
             "  1 - Display players by ranking\n"
             "  2 - Change ranking\n"
@@ -101,7 +94,6 @@ class SelectMenuView:
         return menu_choice
 
     def ranking_menu(self):
-        """ """
         menu_choice = input(
             "\n"
             "\nWhat do you want to do :\n"
@@ -111,7 +103,6 @@ class SelectMenuView:
         return menu_choice
 
     def players_menu(self):
-        """ """
         menu_choice = input(
             "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
@@ -122,7 +113,6 @@ class SelectMenuView:
         return menu_choice
 
     def write_score_menu(self, match):
-        """ """
         menu_choice = input(
             "\n"
             "\nWho win :\n"

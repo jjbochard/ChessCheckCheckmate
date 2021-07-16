@@ -130,3 +130,4 @@ dmypy.json
 
 # Test db.json
 test_db.json
+test_add_players_function.py

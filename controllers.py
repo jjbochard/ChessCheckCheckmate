@@ -29,14 +29,15 @@ class Controller:
 
     def run(self):
         """
-        Loop that runs all the next
-        'menu' methods from the controllers
+        Run the code by displaying welcome message and maim menu
         """
         self.warning.welcome_message()
         self.main_menu()
 
     def main_menu(self):
-        """ """
+        """
+        Display main menu
+        """
         while True:
             response = self.select.main_menu()
             if input_validators.is_valid_main_menu_response(response):
@@ -53,37 +54,45 @@ class Controller:
         if response == "2":
             return self.create_player()
         if response == "3":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "4":
-            return self.display_tournaments_menu()
+            return self.tournaments_menu()
         if response == "5":
-            return self.display_players_menu()
+            return self.players_menu()
         if response == "6":
             return self.quit()
 
-    def display_tournaments_menu(self):
-        """ """
+    def tournaments_menu(self):
+        """
+        Display tournaments menu
+        """
         response = self.table.tournaments()
         while True:
             response = self.select.tournament_menu()
             if input_validators.is_valid_tournament_menu_response(response):
                 break
         if response == "1":
-            return self.display_choice_tournament_for_print_players()
+            return self.choice_tournament_for_print_players()
         if response == "2":
-            return self.display_choice_tournament_for_print_rounds()
+            return self.choice_tournament_for_print_rounds()
         if response == "3":
-            return self.display_choice_tournament_for_print_matchs()
+            return self.choice_tournament_for_print_matchs()
         if response == "4":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "5":
             return self.main_menu()
         if response == "6":
             return self.quit()
 
-    def display_choice_tournament_for_print_players(self):
-        """ """
-        choice_tournament = self.select.choose_tournament_for_print_players()
+    def choice_tournament_for_print_players(self):
+        """
+        Display a menu to choice wich manner to display players for a tournament
+        Choices : ranking or alphabetical order
+        """
+        while True:
+            choice_tournament = self.select.choose_tournament_for_print_players()
+            if input_validators.is_valid_id_tournament(choice_tournament):
+                break
         while True:
             choice_manner = self.select.print_players_menu()
             if input_validators.is_valid_print_players_menu_response(choice_manner):
@@ -92,54 +101,70 @@ class Controller:
             self.table.players_by_ranking_of_tournament(choice_tournament)
         else:
             self.table.players_by_alphabetical_order_of_tournament(choice_tournament)
-        self.display_tournaments_menu()
+        self.tournaments_menu()
 
-    def display_choice_tournament_for_print_rounds(self):
-        """ """
-        choice_tournament = self.select.choose_tournament_for_print_rounds()
+    def choice_tournament_for_print_rounds(self):
+        """
+        Display a menu to choice wich tournament to display rounds
+        """
+        while True:
+            choice_tournament = self.select.choose_tournament_for_print_rounds()
+            if input_validators.is_valid_id_tournament(choice_tournament):
+                break
         self.table.rounds_of_tournament(choice_tournament)
-        self.display_tournaments_menu()
+        self.tournaments_menu()
 
-    def display_choice_tournament_for_print_matchs(self):
-        """ """
-        choice_tournament = self.select.choose_tournament_for_print_matchs()
+    def choice_tournament_for_print_matchs(self):
+        """
+        Display a menu to choice wich tournament to display matchs
+        """
+        while True:
+            choice_tournament = self.select.choose_tournament_for_print_matchs()
+            if input_validators.is_valid_id_tournament(choice_tournament):
+                break
         response = self.table.matchs_of_tournament(choice_tournament)
         while True:
             response = self.select.tournament_menu()
             if input_validators.is_valid_tournament_menu_response(response):
                 break
         if response == "1":
-            return self.display_choice_tournament_for_print_players()
+            return self.choice_tournament_for_print_players()
         if response == "2":
-            return self.display_choice_tournament_for_print_rounds()
+            return self.choice_tournament_for_print_rounds()
         if response == "3":
-            return self.display_choice_tournament_for_print_matchs()
+            return self.choice_tournament_for_print_matchs()
         if response == "4":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "5":
             return self.main_menu()
         if response == "6":
             return self.quit()
 
-    def display_players_menu(self):
-        """ """
+    def players_menu(self):
+        """
+        Display players menu
+        """
         while True:
             response = self.select.players_menu()
             if input_validators.is_valid_players_menu_response(response):
                 break
         if response == "1":
-            return self.display_players_by_ranking()
+            return self.players_by_ranking()
         if response == "2":
-            return self.display_players_by_alphabetical_order()
+            return self.players_by_alphabetical_order()
         if response == "3":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "4":
             return self.main_menu()
         if response == "5":
             return self.quit()
 
     def update_scores(self, match):
-        """ """
+        """
+        Update score of both Match and Player table
+        Args:
+            match: match to update
+        """
         while True:
             response = self.select.write_score_menu(match)
             if input_validators.is_valid_write_score_menu_response(response):
@@ -147,24 +172,28 @@ class Controller:
         Match.update_score_match(self, match, response, self.match_table)
         Player.update_score_player(self, match, response, self.player_table)
 
-    def display_players_by_ranking(self):
-        """ """
+    def players_by_ranking(self):
+        """
+        Display players by ranking table
+        """
         response = self.table.players_by_ranking()
         while True:
             response = self.select.players_by_ranking_menu()
             if input_validators.is_valid_players_by_ranking_menu_response(response):
                 break
         if response == "1":
-            return self.display_players_by_alphabetical_order()
+            return self.players_by_alphabetical_order()
         if response == "2":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "3":
             return self.main_menu()
         if response == "4":
             return self.quit()
 
-    def display_players_by_alphabetical_order(self):
-        """ """
+    def players_by_alphabetical_order(self):
+        """
+        Display players by alphabetical order table
+        """
         response = self.table.players_by_alphabetical_order()
         while True:
             response = self.select.players_by_alphabetical_order_menu()
@@ -173,15 +202,18 @@ class Controller:
             ):
                 break
         if response == "1":
-            return self.display_players_by_ranking()
+            return self.players_by_ranking()
         if response == "2":
-            return self.display_change_ranking_menu()
+            return self.change_ranking_menu()
         if response == "3":
             return self.main_menu()
         if response == "4":
             return self.quit()
 
-    def display_change_ranking_menu(self):
+    def change_ranking_menu(self):
+        """
+        Display change ranking menu
+        """
         self.table.players_by_id()
         while True:
             response = self.select.ranking_menu()
@@ -192,7 +224,10 @@ class Controller:
         if response == "2":
             return self.main_menu()
 
-    def display_choice_create_next_round(self):
+    def choice_create_next_round(self):
+        """
+        Display a menu to let the user choice if he wants to create next round
+        """
         while True:
             response = self.select.next_round_menu()
             if input_validators.is_valid_next_round_menu_response(response):
@@ -206,7 +241,10 @@ class Controller:
         if response == "4":
             return self.quit()
 
-    def display_choice_end_round(self):
+    def choice_end_round(self):
+        """
+        Display a menu to let the user choice if he wants to end current round
+        """
         while True:
             response = self.select.end_round_menu()
             if input_validators.is_valid_end_round_menu_response(response):
@@ -218,23 +256,19 @@ class Controller:
         if response == "3":
             return self.quit()
 
-    def quit(self):
-        """
-        Close the program
-        """
-        self.warning.quit()
-        return True
-
     def create_tournament(self):
+        """
+        Create tournamennt. Let the choice to quit the program before create or before end a round
+        """
         new_tournament = Tournament.create_tournament()
         serialized_tournament = vars(new_tournament)
         self.tournament_table.insert(serialized_tournament)
         self.add_players_to_tournament()
         while self.tournament_table.all()[-1]["status_tournament"] != "finished":
-            quit_before_create_round = self.display_choice_create_next_round()
+            quit_before_create_round = self.choice_create_next_round()
             if quit_before_create_round is True:
                 break
-            quit_before_end_round = self.display_choice_end_round()
+            quit_before_end_round = self.choice_end_round()
             if quit_before_end_round is True:
                 break
             j = -4
@@ -246,15 +280,19 @@ class Controller:
                 self.end_tournament()
 
     def continue_tournament(self):
+        """
+        Continue tournamennt (if one is pending).
+        Let the choice to quit the program before create or before end a round
+        """
         while self.tournament_table.all()[-1]["status_tournament"] != "finished":
             if (
                 self.round_table.all() == []
                 or self.round_table.all()[-1]["status_round"] == "finished"
             ):
-                quit_before_create_round = self.display_choice_create_next_round()
+                quit_before_create_round = self.choice_create_next_round()
                 if quit_before_create_round is True:
                     break
-                quit_before_end_round = self.display_choice_end_round()
+                quit_before_end_round = self.choice_end_round()
                 if quit_before_end_round is True:
                     break
                 j = -4
@@ -265,7 +303,7 @@ class Controller:
                 if self.round_table.all()[-1]["current_round"] == 4:
                     self.end_tournament()
             else:
-                quit_before_end_round = self.display_choice_end_round()
+                quit_before_end_round = self.choice_end_round()
                 if quit_before_end_round is True:
                     break
 
@@ -277,11 +315,14 @@ class Controller:
                 if self.round_table.all()[-1]["current_round"] == 4:
                     self.end_tournament()
                 else:
-                    quit_before_create_round = self.display_choice_create_next_round()
+                    quit_before_create_round = self.choice_create_next_round()
                     if quit_before_create_round is True:
                         break
 
     def add_players_to_tournament(self):
+        """
+        Add players to tournament. Initialize their score to 0.
+        """
         number_of_player = 0
         list_of_players_added = []
         list_of_remaining_players = Player.list_of_remaining_players(
@@ -297,9 +338,12 @@ class Controller:
                 ):
                     break
             if response == "1":
-                existed_player_id = int(
-                    self.choice_player_for_add_player_to_a_tournament()
-                )
+                while True:
+                    existed_player_id = int(
+                        self.choice_player_for_add_player_to_a_tournament()
+                    )
+                    if input_validators.is_valid_id_player(existed_player_id) is True:
+                        break
                 list_of_players_added.append(existed_player_id)
             elif response == "2":
                 new_player_id = self.create_player()
@@ -323,13 +367,14 @@ class Controller:
             for player in list_of_remaining_players:
                 if player[0] == existed_player_id:
                     list_of_remaining_players.remove(player)
-        self.tournament_table.update(
-            {"players": list_of_players_added},
-            doc_ids=[self.tournament_table.all()[-1].doc_id],
-        )
 
     def create_player(self):
-        new_player = Player.create_player(self.player_table)
+        """
+        Create player
+        Returns:
+            new_player_id (int): only when create player a the beginning of a tournament
+        """
+        new_player = Player.create_player()
         serialized_player = vars(new_player)
         self.player_table.insert(serialized_player)
         new_player_id = self.player_table.all()[-1].doc_id
@@ -344,7 +389,15 @@ class Controller:
             return self.main_menu()
 
     def get_input_new_ranking(self):
-        id_player = int(self.select.change_ranking())
+        """
+        Get the input of the user when change ranking of a player
+        Returns:
+            new_ranking (int): new_ranking choice by the user
+        """
+        while True:
+            id_player = int(self.select.change_ranking())
+            if input_validators.is_valid_id_player(id_player):
+                break
         new_ranking = int(
             input(
                 "Enter a new ranking for "
@@ -362,6 +415,11 @@ class Controller:
         return new_ranking
 
     def check_same_ranking(self):
+        """
+        Check if the new ranking selected for a new player is already choosen
+        Returns:
+            Contains_duplicates (bool): depend on if the new ranking is already choosen
+        """
         players_ranking = []
         for player in self.player_table:
             players_ranking.append(player["ranking"])
@@ -371,6 +429,9 @@ class Controller:
         return contains_duplicates
 
     def change_ranking(self):
+        """
+        Change ranking of a player
+        """
         new_ranking = self.get_input_new_ranking()
         contains_duplicates = self.check_same_ranking()
         while contains_duplicates is True:
@@ -378,9 +439,12 @@ class Controller:
             self.warning.players_same_ranking(new_ranking)
             new_ranking = self.get_input_new_ranking()
             contains_duplicates = self.check_same_ranking()
-        return self.display_change_ranking_menu()
+        return self.change_ranking_menu()
 
     def end_round(self):
+        """
+        End a round
+        """
         self.round_table.update(
             {"status_round": "finished"},
             doc_ids=[self.round_table.all()[-1].doc_id],
@@ -395,6 +459,9 @@ class Controller:
         )
 
     def is_new_tournament(self):
+        """
+        Check if a tournament is a new one
+        """
         if (
             self.round_table.all() == []
             or self.round_table.all()[-1]["current_round"] == 4
@@ -402,6 +469,11 @@ class Controller:
             return True
 
     def list_of_players_by_ranking(self):
+        """
+        Create a list of players sorted by ranking
+        Returns:
+            list_of_players_by_ranking (list): list of all the players of a tournament
+        """
         list_ranking_player = []
         for player in self.tournament_table.all()[-1]["players"]:
             list_ranking_player.append((self.player_table.get(doc_id=player)))
@@ -411,6 +483,11 @@ class Controller:
         return list_of_players_by_ranking
 
     def list_of_players_by_score(self):
+        """
+        Create a list of players sorted by score
+        Returns:
+            list_of_players_by_score (list): list of all the players of a tournament
+        """
         list_score_player = []
         for player in self.tournament_table.all()[-1]["players"]:
             list_score_player.append((self.player_table.get(doc_id=player)))
@@ -420,6 +497,11 @@ class Controller:
         return list_of_players_by_score
 
     def list_of_all_matchs_of_a_tournament(self):
+        """
+        Create a list of all matchs of a tournament
+        Returns:
+            all_matchs (list): list of all matchs of a tournament
+        """
         all_matchs = []
         for rounds in self.tournament_table.all()[-1]["rounds"]:
             for matchs in self.round_table.all()[rounds - 1]["list_of_match"]:
@@ -432,6 +514,9 @@ class Controller:
         return all_matchs
 
     def create_round(self):
+        """
+        Create a round. Update tournament and round table
+        """
         new_round = Round.create_round()
         serialized_round = vars(new_round)
         if self.is_new_tournament():
@@ -529,15 +614,30 @@ class Controller:
             self.table.matchs()
 
     def choice_player_for_add_player_to_a_tournament(self):
+        """
+        Choice a player in the list of all the players in the database
+        Returns:
+            choice_player (int): id a the player choosen
+        """
         choice_player = self.select.add_player()
         return choice_player
 
     def is_match_already_play(self, list_match, id1, id2):
+        """
+        Check if a match has already been played
+        Args:
+            list_match (list): lists of couple of player's id
+            id1: id of the player one
+            id2: id of the player two
+        """
         for match in list_match:
             if collections.Counter([id1, id2]) == collections.Counter(match):
                 return True
 
     def end_tournament(self):
+        """
+        End a tournament
+        """
         self.warning.tournament_winner()
         self.tournament_table.update(
             {
@@ -551,4 +651,11 @@ class Controller:
             {"status_tournament": "finished"},
             doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
-        self.select.main_menu()
+        self.quit()
+
+    def quit(self):
+        """
+        Close the program
+        """
+        self.warning.quit()
+        return True

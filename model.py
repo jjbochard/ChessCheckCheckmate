@@ -2,6 +2,8 @@ import json
 import random
 from datetime import datetime
 
+import input_validators
+
 
 class Tournament:
     def __init__(
@@ -31,10 +33,13 @@ class Tournament:
 
     @classmethod
     def create_tournament(cls):
-        name = input("Name: ")
-        place = input("Place: ")
-        time_control = input("Time control (Biltz, Bullet or Rapid): ")
-        description = input("Description: ")
+        name = input("Name: ").capitalize()
+        place = input("Place: ").capitalize()
+        while True:
+            time_control = input("Time control (Biltz, Bullet or Rapid): ").capitalize()
+            if input_validators.is_valid_time_control(time_control):
+                break
+        description = input("Description: ").capitalize()
         status_tournament = "pending"
         return Tournament(name, place, time_control, description, status_tournament)
 
@@ -50,6 +55,14 @@ class Tournament:
         if status_tournament == "finished":
             return True
 
+    @staticmethod
+    def get_tournaments(table):
+        list_tournaments = []
+        for tournament in table:
+            tournament = str(tournament.doc_id)
+            list_tournaments.append(tournament)
+        return list_tournaments
+
 
 class Player:
     def __init__(
@@ -63,67 +76,43 @@ class Player:
         self.score = score
 
     @classmethod
-    def create_player(cls, table):
-        first_name = input("First name : ").capitalize()
-        last_name = input("Last_name : ").capitalize()
-        date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")
-        full_name_response = cls.check_player_exists(
-            cls, first_name, last_name, date_of_birth, table
-        )
-        while full_name_response is True:
+    def create_player(cls):
+        while True:
             first_name = input("First name : ").capitalize()
             last_name = input("Last_name : ").capitalize()
             date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")
-
-            full_name_response = cls.check_player_exists(
-                cls, first_name, last_name, date_of_birth, table
-            )
-        gender = input("Gender (Female or Male): ").capitalize()
-        gender_response = cls.check_gender(cls, gender)
-        while gender_response is False:
+            if input_validators.is_not_already_added_player(
+                first_name, last_name, date_of_birth
+            ):
+                break
+        while True:
             gender = input("Gender (Female or Male): ").capitalize()
-            gender_response = cls.check_gender(cls, gender)
-        ranking = int(input("Ranking : "))
-        ranking_response = cls.check_ranking(cls, ranking, table)
-        while ranking_response is True:
+            if input_validators.is_valid_gender(gender):
+                break
+        while True:
             ranking = int(input("Ranking : "))
-            ranking_response = cls.check_ranking(cls, ranking, table)
+            if input_validators.is_unused_ranking(ranking):
+                break
         return Player(first_name, last_name, date_of_birth, gender, ranking)
 
-    def check_ranking(self, new_ranking, table):
-        list_ranking = self.get_rankings(self, table)
-        list_ranking.append(new_ranking)
-        contains_duplicates = any(
-            list_ranking.count(element) > 1 for element in list_ranking
-        )
-        if contains_duplicates is True:
-            print("Ranking already choosen")
-            return True
+    @staticmethod
+    def get_players(table):
+        list_players = []
+        for player in table:
+            player = player.doc_id
+            list_players.append(player)
+        return list_players
 
-    def get_rankings(self, table):
+    @staticmethod
+    def get_rankings(table):
         list_ranking = []
         for player in table:
             ranking = player["ranking"]
             list_ranking.append(ranking)
         return list_ranking
 
-    def check_player_exists(
-        self, new_first_name, new_last_name, new_date_of_birth, table
-    ):
-        list_full_name, list_date_of_birth = self.get_full_name_and_date_of_birth(
-            self, table
-        )
-        current_fullname = "%s %s" % (new_first_name, new_last_name)
-        current_date_of_birth = new_date_of_birth
-        date_of_birth_of_full_name_duplicate = self.check_full_name_duplicate(
-            self, current_fullname, list_full_name, list_date_of_birth
-        )
-        for date in date_of_birth_of_full_name_duplicate:
-            if self.check_date_duplicate(self, current_date_of_birth, date) is True:
-                print("Player already exist")
-                return True
-
-    def get_full_name_and_date_of_birth(self, table):
+    @staticmethod
+    def get_full_name_and_date_of_birth(table):
         list_full_name = []
         list_date_of_birth = []
         for player in table:
@@ -133,8 +122,9 @@ class Player:
             list_date_of_birth.append(date_of_birth)
         return list_full_name, list_date_of_birth
 
+    @staticmethod
     def check_full_name_duplicate(
-        self, current_full_name, list_full_name, list_date_of_birth
+        current_full_name, list_full_name, list_date_of_birth
     ):
         full_name_duplicate = []
         date_of_birth_of_full_name_duplicate = []
@@ -146,14 +136,10 @@ class Player:
             index += 1
         return date_of_birth_of_full_name_duplicate
 
-    def check_date_duplicate(self, date_one, date_two):
+    @staticmethod
+    def check_date_duplicate(date_one, date_two):
         if date_one == date_two:
             return True
-
-    def check_gender(self, new_gender):
-        if new_gender != "Male" and new_gender != "Female":
-            print("Gender must be Female or Male")
-            return False
 
     def sort_player_by_ranking(self, list):
         return sorted(list, key=lambda player: player["ranking"])
