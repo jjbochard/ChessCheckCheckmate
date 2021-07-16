@@ -128,6 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Test db.json
-test_db.json
-test_add_players_function.py
+# Test
+Test/
