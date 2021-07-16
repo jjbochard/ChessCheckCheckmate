@@ -20,14 +20,14 @@ class Tournament:
 
         self.name = name
         self.place = place
-        self.start_date = start_date
-        self.end_date = end_date
         self.time_control = time_control
         self.description = description
+        self.status_tournament = status_tournament
+        self.start_date = start_date
+        self.end_date = end_date
         self.rounds = rounds
         self.players = players
         self.nb_of_rounds = nb_of_rounds
-        self.status_tournament = status_tournament
 
     @classmethod
     def create_tournament(cls):
@@ -37,6 +37,18 @@ class Tournament:
         description = input("Description: ")
         status_tournament = "pending"
         return Tournament(name, place, time_control, description, status_tournament)
+
+    @classmethod
+    def tournament_table_is_empty(cls, table):
+        status_tournament_table = table.all()
+        if status_tournament_table == []:
+            return True
+
+    @classmethod
+    def status_tournament_is_finished(cls, table):
+        status_tournament = table.all()[-1]["status_tournament"]
+        if status_tournament == "finished":
+            return True
 
 
 class Player:
@@ -76,7 +88,6 @@ class Player:
         while ranking_response is True:
             ranking = int(input("Ranking : "))
             ranking_response = cls.check_ranking(cls, ranking, table)
-
         return Player(first_name, last_name, date_of_birth, gender, ranking)
 
     def check_ranking(self, new_ranking, table):
@@ -152,7 +163,7 @@ class Player:
             list, key=lambda player: (player["score"], -player["ranking"]), reverse=True
         )
 
-    def make_list_of_players_by_ranking(self, list):
+    def sort_list_of_players_by_ranking(self, list):
         sort_list_of_players = []
         top_list_of_players = []
         down_list_of_players = []
@@ -165,10 +176,61 @@ class Player:
             j -= 1
         return list_of_players_ordered
 
-    def make_list_of_players_by_score(self, list):
+    def sort_list_of_players_by_score(self, list):
         list_of_players_ordered = []
         list_of_players_ordered = Player.sort_player_by_score(self, list)
         return list_of_players_ordered
+
+    def update_score_player(self, match, response, table):
+        if response == "1":
+            table.update(
+                {"score": table.all()[(match["player_1"]) - 1]["score"] + 1.0},
+                doc_ids=[(table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            table.update(
+                {"score": table.all()[(match["player_2"]) - 1]["score"] + 0.0},
+                doc_ids=[(table.all()[(match["player_2"]) - 1]).doc_id],
+            )
+        if response == "2":
+            table.update(
+                {"score": table.all()[(match["player_1"]) - 1]["score"] + 0.0},
+                doc_ids=[(table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            table.update(
+                {"score": table.all()[(match["player_2"]) - 1]["score"] + 1.0},
+                doc_ids=[(table.all()[(match["player_2"]) - 1]).doc_id],
+            )
+        if response == "3":
+            table.update(
+                {"score": table.all()[(match["player_1"]) - 1]["score"] + 0.5},
+                doc_ids=[(table.all()[(match["player_1"]) - 1]).doc_id],
+            )
+            table.update(
+                {"score": table.all()[(match["player_2"]) - 1]["score"] + 0.5},
+                doc_ids=[(table.all()[(match["player_2"]) - 1]).doc_id],
+            )
+
+    def list_of_remaining_players(self, table):
+        list_of_remaining_players = []
+        for player in table:
+            list_of_remaining_players.append(
+                [
+                    player.doc_id,
+                    player["last_name"],
+                    player["first_name"],
+                    player["ranking"],
+                    player["date_of_birth"],
+                    player["gender"],
+                ]
+            )
+        return list_of_remaining_players
+
+    def initialize_score(self, player_table, tournament_table):
+        for player in tournament_table.all()[-1]["players"]:
+            player_table.update(
+                {"score": 0.0},
+                doc_ids=[player_table.all()[player - 1].doc_id],
+            )
 
 
 class Match:
@@ -188,6 +250,35 @@ class Match:
             player_1 = random_player_2
             player_2 = random_player_1
         return Match(player_1, player_2)
+
+    def update_score_match(self, match, response, table):
+        if response == "1":
+            table.update(
+                {"score_player_1": 1.0},
+                doc_ids=[match.doc_id],
+            )
+            table.update(
+                {"score_player_2": 0.0},
+                doc_ids=[match.doc_id],
+            )
+        elif response == "2":
+            table.update(
+                {"score_player_1": 0.0},
+                doc_ids=[match.doc_id],
+            )
+            table.update(
+                {"score_player_2": 1.0},
+                doc_ids=[match.doc_id],
+            )
+        elif response == "3":
+            table.update(
+                {"score_player_1": 0.5},
+                doc_ids=[match.doc_id],
+            )
+            table.update(
+                {"score_player_2": 0.5},
+                doc_ids=[match.doc_id],
+            )
 
 
 class Round:
@@ -214,3 +305,17 @@ class Round:
         start_date = json.dumps(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
         status_round = "pending"
         return Round(name, start_date, current_round, status_round)
+
+    def end_round(round_table):
+        round_table.update(
+            {"status_round": "finished"},
+            doc_ids=[round_table.all()[-1].doc_id],
+        )
+        round_table.update(
+            {
+                "end_date": json.dumps(
+                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
+                )
+            },
+            doc_ids=[round_table.all()[-1].doc_id],
+        )

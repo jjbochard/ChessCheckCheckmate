@@ -37,7 +37,7 @@ class WarningView:
         players_of_tournament_by_score = []
         for players in self.tournament_table.all()[-1]["players"]:
             players_of_tournament.append(self.player_table.all()[players - 1])
-        players_of_tournament_by_score = Player.make_list_of_players_by_score(
+        players_of_tournament_by_score = Player.sort_list_of_players_by_score(
             self, players_of_tournament
         )
         print(
