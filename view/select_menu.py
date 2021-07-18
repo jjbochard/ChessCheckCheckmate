@@ -19,7 +19,7 @@ class SelectMenuView:
             self.tournament_table.all() == []
             or self.tournament_table.all()[-1]["status_tournament"] == "finished"
         ):
-            menu_choice = input(
+            return input(
                 "\n"
                 "  1 - Start a tournament\n"
                 "  2 - Create a player\n"
@@ -30,7 +30,7 @@ class SelectMenuView:
                 "  Your choice:"
             )
         else:
-            menu_choice = input(
+            return input(
                 "\n"
                 "  1 - Continue a tournament\n"
                 "  2 - Create a player\n"
@@ -40,10 +40,9 @@ class SelectMenuView:
                 "  6 - Quit\n"
                 "  Your choice:"
             )
-        return menu_choice
 
     def tournament_menu(self):
-        menu_choice = input(
+        return input(
             "  1 - Display tournament's players\n"
             "  2 - Display tournament's rounds\n"
             "  3 - Display tournament's matchs\n"
@@ -52,70 +51,58 @@ class SelectMenuView:
             "  6 - Quit\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def next_round_menu(self):
-        menu_choice = input(
+        return input(
             "\n"
             "  1 - Create next round\n"
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
-            "  4 - Quit\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def end_round_menu(self):
-        menu_choice = input(
-            "\n"
-            "  1 - End round\n"
-            "  2 - Go to main menu\n"
-            "  3 - Quit\n"
-            "  Your choice:"
+        return input(
+            "\n" "  1 - End round\n" "  2 - Go to main menu\n" "  Your choice:"
         )
-        return menu_choice
 
     def print_players_menu(self):
-        choice_manner = input(
+        return input(
             "\n"
             "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
             "  Your choice:"
         )
-        return choice_manner
 
     def players_by_ranking_menu(self):
-        menu_choice = input(
+        return input(
             "  1 - Display players by alphabetical order\n"
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
             "  4 - Quit\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def players_by_alphabetical_order_menu(self):
-        menu_choice = input(
+        return input(
             "  1 - Display players by ranking\n"
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
             "  4 - Quit\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def ranking_menu(self):
-        menu_choice = input(
+        return input(
             "\n"
             "\nWhat do you want to do :\n"
             "  1 - Change ranking\n"
             "  2 - Go to main menu\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def players_menu(self):
-        menu_choice = input(
+        return input(
             "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
             "  3 - Change ranking\n"
@@ -123,10 +110,9 @@ class SelectMenuView:
             "  5 - Quit\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def write_score_menu(self, match):
-        menu_choice = input(
+        return input(
             "\n"
             "\nWho win :\n"
             "  1 - "
@@ -142,43 +128,34 @@ class SelectMenuView:
             "  3 - Draw match\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def add_player_create_tournament_menu(self):
-        menu_choice = input(
+        return input(
             "\n  1 - Add existed players\n"
             "  2 - Add a new player\n"
             "  3 - Change ranking\n"
             "  Your choice:"
         )
-        return menu_choice
 
     def change_ranking(self):
-        choice_player = input(
-            "For which player do you want to change ranking (choose an id): "
-        )
-        return choice_player
+        return input("For which player do you want to change ranking (choose an id): ")
 
     def add_player(self):
-        choice_player = input(
+        return input(
             "Which player do you want to add to this tournament (choose an id): "
         )
-        return choice_player
 
     def choose_tournament_for_print_players(self):
-        choice_tournament = input(
+        return input(
             "For which tournament do you want to display players (choose an id): "
         )
-        return choice_tournament
 
     def choose_tournament_for_print_rounds(self):
-        choice_tournament = input(
+        return input(
             "For which tournament do you want to display rounds (choose an id): "
         )
-        return choice_tournament
 
     def choose_tournament_for_print_matchs(self):
-        choice_tournament = input(
+        return input(
             "For which tournament do you want to display matchs (choose an id): "
         )
-        return choice_tournament

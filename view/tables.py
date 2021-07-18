@@ -17,18 +17,17 @@ class TablesView:
 
     def players_by_ranking(self):
         """ """
-        players = []
-        for player in self.player_table:
-            players.append(
-                [
-                    player["ranking"],
-                    player.doc_id,
-                    player["last_name"],
-                    player["first_name"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
+        players = [
+            [
+                player["ranking"],
+                player.doc_id,
+                player["last_name"],
+                player["first_name"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in self.player_table
+        ]
         players = sorted(players)
         print(
             tabulate(
@@ -47,17 +46,16 @@ class TablesView:
 
     def players_by_alphabetical_order(self):
         """ """
-        players = []
-        for player in self.player_table:
-            players.append(
-                [
-                    player["last_name"],
-                    player["first_name"],
-                    player["ranking"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
+        players = [
+            [
+                player["last_name"],
+                player["first_name"],
+                player["ranking"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in self.player_table
+        ]
         players = sorted(players, key=lambda k: (k[0], k[1]))
         print(
             tabulate(
@@ -75,18 +73,17 @@ class TablesView:
 
     def players_by_id(self):
         """ """
-        players = []
-        for player in self.player_table:
-            players.append(
-                [
-                    player.doc_id,
-                    player["last_name"],
-                    player["first_name"],
-                    player["ranking"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
+        players = [
+            [
+                player.doc_id,
+                player["last_name"],
+                player["first_name"],
+                player["ranking"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in self.player_table
+        ]
         players = sorted(players)
         print(
             tabulate(
@@ -105,20 +102,20 @@ class TablesView:
 
     def players_by_ranking_of_tournament(self, choice_tournament):
         choose_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
-        players_of_tournament = []
-        for players in choose_tournament["players"]:
-            players_of_tournament.append(self.player_table.all()[players - 1])
-        players_of_tournament_to_print = []
-        for player in players_of_tournament:
-            players_of_tournament_to_print.append(
-                [
-                    player["ranking"],
-                    player["last_name"],
-                    player["first_name"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
+        players_of_tournament = [
+            self.player_table.all()[players - 1]
+            for players in choose_tournament["players"]
+        ]
+        players_of_tournament_to_print = [
+            [
+                player["ranking"],
+                player["last_name"],
+                player["first_name"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in players_of_tournament
+        ]
         players_of_tournament_to_print = sorted(players_of_tournament_to_print)
         print(
             tabulate(
@@ -136,20 +133,20 @@ class TablesView:
 
     def players_by_alphabetical_order_of_tournament(self, choice_tournament):
         choose_tournament = self.tournament_table.all()[int(choice_tournament) - 1]
-        players_of_tournament = []
-        for players in choose_tournament["players"]:
-            players_of_tournament.append(self.player_table.all()[players - 1])
-        players_of_tournament_to_print = []
-        for player in players_of_tournament:
-            players_of_tournament_to_print.append(
-                [
-                    player["last_name"],
-                    player["first_name"],
-                    player["ranking"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
+        players_of_tournament = [
+            self.player_table.all()[players - 1]
+            for players in choose_tournament["players"]
+        ]
+        players_of_tournament_to_print = [
+            [
+                player["last_name"],
+                player["first_name"],
+                player["ranking"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in players_of_tournament
+        ]
         players_of_tournament_to_print = sorted(
             players_of_tournament_to_print, key=lambda k: (k[0], k[1])
         )
@@ -177,8 +174,7 @@ class TablesView:
                 matchs_of_tournament.append(self.match_table.all()[match - 1])
 
         rounds_of_tournament_to_print = []
-        i = 0
-        for round in rounds_of_tournament:
+        for i, round in enumerate(rounds_of_tournament):
             rounds_of_tournament_to_print.append(
                 [
                     round["name"],
@@ -256,8 +252,6 @@ class TablesView:
                     )
             matchs = "".join(matchs_of_round)
             rounds_of_tournament_to_print[i].append(matchs)
-            i += 1
-
         print(
             tabulate(
                 rounds_of_tournament_to_print,
@@ -330,19 +324,18 @@ class TablesView:
 
     def tournaments(self):
         """ """
-        tournaments = []
-        for tournament in self.tournament_table:
-            tournaments.append(
-                [
-                    tournament.doc_id,
-                    tournament["name"],
-                    tournament["place"],
-                    tournament["start_date"],
-                    tournament["end_date"],
-                    tournament["time_control"],
-                    tournament["description"],
-                ]
-            )
+        tournaments = [
+            [
+                tournament.doc_id,
+                tournament["name"],
+                tournament["place"],
+                tournament["start_date"],
+                tournament["end_date"],
+                tournament["time_control"],
+                tournament["description"],
+            ]
+            for tournament in self.tournament_table
+        ]
         print(
             tabulate(
                 tournaments,
@@ -360,11 +353,12 @@ class TablesView:
         )
 
     def matchs(self):
-        matchs_of_round = []
         matchs_of_round_to_print = []
         black_or_white_player = []
-        for match in self.round_table.all()[-1]["list_of_match"]:
-            matchs_of_round.append(self.match_table.all()[match - 1])
+        matchs_of_round = [
+            self.match_table.all()[match - 1]
+            for match in self.round_table.all()[-1]["list_of_match"]
+        ]
         for match in matchs_of_round:
             black_or_white_player.append(
                 [
@@ -390,19 +384,18 @@ class TablesView:
 
     def players_by_score(self):
         """ """
-        players = []
-        for player in self.tournament_table.all()[-1]["players"]:
-            players.append(
-                [
-                    self.player_table.all()[player - 1].doc_id,
-                    self.player_table.all()[player - 1]["score"],
-                    self.player_table.all()[player - 1]["ranking"],
-                    self.player_table.all()[player - 1]["last_name"],
-                    self.player_table.all()[player - 1]["first_name"],
-                    self.player_table.all()[player - 1]["date_of_birth"],
-                    self.player_table.all()[player - 1]["gender"],
-                ]
-            )
+        players = [
+            [
+                self.player_table.all()[player - 1].doc_id,
+                self.player_table.all()[player - 1]["score"],
+                self.player_table.all()[player - 1]["ranking"],
+                self.player_table.all()[player - 1]["last_name"],
+                self.player_table.all()[player - 1]["first_name"],
+                self.player_table.all()[player - 1]["date_of_birth"],
+                self.player_table.all()[player - 1]["gender"],
+            ]
+            for player in self.tournament_table.all()[-1]["players"]
+        ]
         players = sorted(
             players, key=lambda player: (player[1], -player[2]), reverse=True
         )
@@ -424,18 +417,17 @@ class TablesView:
 
     def remaining_players(self, list_of_remaining_players):
         """ """
-        players = []
-        for player in list_of_remaining_players:
-            players.append(
-                [
-                    player[0],
-                    player[1],
-                    player[2],
-                    player[3],
-                    player[4],
-                    player[5],
-                ]
-            )
+        players = [
+            [
+                player[0],
+                player[1],
+                player[2],
+                player[3],
+                player[4],
+                player[5],
+            ]
+            for player in list_of_remaining_players
+        ]
         players = sorted(players)
         print(
             tabulate(

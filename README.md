@@ -9,6 +9,17 @@
 
 ## Foreword
 
+The aim of the program is the to manage chest tournaments.
+
+Tournaments are playing weekly. So they can be created one at a time.
+
+About the rules, there are :
+- 8 players by tournament.
+- 4 rounds.
+- 3 choices of time comtrol (blitz, bullet or rapid).
+- colors are choosen randomly.
+
+The format is a Swiss-sytsem tournament
 ## Installation
 ### Clone the code source (using ssh)
 
@@ -49,5 +60,28 @@ You can install the configured pre commit hook with
     pre-commit install
 
 ## How to use
+
++ Run the program
+
+To start the program, use :
+
+    python ucm.py
+* Manage tournament
+  + Create a tournament
+    - enter the informations of the tournament
+    - add 8 players (already in base or create new players)
+
+  + Create round
+    - incoming matchs are displayed
+    - end the round or go to the main menu
+
+  + Write scores
+
+  + When the tournament is finished, an overview table and the winner are displayed
+
+* Display informations
+  + About tournaments
+  + About rounds
+  + About matchs
 
 ## Possible improvements

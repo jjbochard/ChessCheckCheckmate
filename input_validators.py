@@ -14,7 +14,7 @@ def is_valid_tournament_menu_response(response):
 
 
 def is_valid_next_round_menu_response(response):
-    if response in ["1", "2", "3", "4"]:
+    if response in ["1", "2", "3"]:
         return True
 
 
@@ -60,14 +60,14 @@ def is_valid_add_player_create_tournament_menu_response(response):
 
 def is_valid_time_control(response):
     if response not in ["Blitz", "Bullet", "Rapid"]:
-        print("Time control must be Blitz, Bullet or Rapid")
+        print("  Time control must be Blitz, Bullet or Rapid")
     else:
         return True
 
 
 def is_valid_gender(response):
     if response not in ["Female", "Male"]:
-        print("Gender must be Female or Male")
+        print("  Gender must be Female or Male")
     else:
         return True
 
@@ -75,7 +75,7 @@ def is_valid_gender(response):
 def is_valid_id_player(response):
     list_players = Player.get_players(TinyDB("db.json").table("player"))
     if response not in list_players:
-        print("Invalid player Id")
+        print("  Invalid player Id")
     else:
         return True
 
@@ -83,7 +83,7 @@ def is_valid_id_player(response):
 def is_valid_id_tournament(response):
     list_tournaments = Tournament.get_tournaments(TinyDB("db.json").table("tournament"))
     if response not in list_tournaments:
-        print("Invalid tournamanet Id")
+        print("  Invalid tournamanet Id")
     else:
         return True
 
@@ -94,8 +94,8 @@ def is_unused_ranking(response):
     contains_duplicates = any(
         list_rankings.count(element) > 1 for element in list_rankings
     )
-    if contains_duplicates is True:
-        print("Ranking already choosen")
+    if contains_duplicates:
+        print("  Ranking already choosen")
     else:
         return True
 
@@ -113,9 +113,8 @@ def is_not_already_added_player(
     )
     if date_of_birth_of_full_name_duplicate == []:
         return True
-    else:
-        for date in date_of_birth_of_full_name_duplicate:
-            if Player.check_date_duplicate(new_date_of_birth, date) is True:
-                print("Player already exist")
-            else:
-                return True
+    for date in date_of_birth_of_full_name_duplicate:
+        if Player.check_date_duplicate(new_date_of_birth, date) is True:
+            print("  Player already exist")
+        else:
+            return True

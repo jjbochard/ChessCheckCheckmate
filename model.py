@@ -105,11 +105,7 @@ class Player:
 
     @staticmethod
     def get_rankings(table):
-        list_ranking = []
-        for player in table:
-            ranking = player["ranking"]
-            list_ranking.append(ranking)
-        return list_ranking
+        return [player["ranking"] for player in table]
 
     @staticmethod
     def get_full_name_and_date_of_birth(table):
@@ -128,12 +124,10 @@ class Player:
     ):
         full_name_duplicate = []
         date_of_birth_of_full_name_duplicate = []
-        index = 0
-        for full_name in list_full_name:
+        for index, full_name in enumerate(list_full_name):
             if full_name == current_full_name:
                 full_name_duplicate.append(full_name)
                 date_of_birth_of_full_name_duplicate.append(list_date_of_birth[index])
-            index += 1
         return date_of_birth_of_full_name_duplicate
 
     @staticmethod
@@ -156,7 +150,7 @@ class Player:
         list_of_players_ordered = (top_list_of_players, down_list_of_players)
         sort_list_of_players = Player.sort_player_by_ranking(self, list)
         j = int(len(sort_list_of_players) / 2)
-        for i in range(int(len(sort_list_of_players) / 2)):
+        for _ in range(int(len(sort_list_of_players) / 2)):
             down_list_of_players.append(sort_list_of_players.pop(j))
             top_list_of_players.append(sort_list_of_players.pop(0))
             j -= 1
@@ -197,19 +191,17 @@ class Player:
             )
 
     def list_of_remaining_players(self, table):
-        list_of_remaining_players = []
-        for player in table:
-            list_of_remaining_players.append(
-                [
-                    player.doc_id,
-                    player["last_name"],
-                    player["first_name"],
-                    player["ranking"],
-                    player["date_of_birth"],
-                    player["gender"],
-                ]
-            )
-        return list_of_remaining_players
+        return [
+            [
+                player.doc_id,
+                player["last_name"],
+                player["first_name"],
+                player["ranking"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in table
+        ]
 
     def initialize_score(self, player_table, tournament_table):
         for player in tournament_table.all()[-1]["players"]:
