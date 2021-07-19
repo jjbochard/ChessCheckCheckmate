@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from tinydb import TinyDB
 
 from model import Player, Tournament
@@ -118,3 +120,16 @@ def is_not_already_added_player(
             print("  Player already exist")
         else:
             return True
+
+
+def is__valid_date_of_birth():
+    while True:
+        try:
+            date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")
+            datetime.strptime(date_of_birth, "%Y-%m-%d")
+            break
+        except ValueError:
+            print(
+                "  Incorrect format given for dates. They must be given like 'yyyy-mm-dd'"
+            )
+    return date_of_birth
