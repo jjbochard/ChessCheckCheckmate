@@ -24,7 +24,7 @@ The format is a Swiss-sytsem tournament
 ### Clone the code source (using ssh)
 
     mkdir foo
-    git clone git@github.com:jjbochard/P02_Bookstoscrape.git foo
+    git clone git@github.com:jjbochard/ChessCheckCheckmate.git foo
     cd foo
 
 ### Create your virtual environnement
