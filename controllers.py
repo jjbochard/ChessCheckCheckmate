@@ -43,14 +43,7 @@ class Controller:
             if input_validators.is_valid_main_menu_response(response):
                 break
         if response == "1":
-            if (
-                Tournament.tournament_table_is_empty(self.tournament_table) is True
-                or Tournament.status_tournament_is_finished(self.tournament_table)
-                is True
-            ):
-                return self.create_tournament()
-            else:
-                return self.continue_tournament()
+            return self.manage_tournament()
         if response == "2":
             return self.create_player_main_menu()
         if response == "3":
@@ -233,7 +226,10 @@ class Controller:
             if input_validators.is_valid_next_round_menu_response(response):
                 break
         if response == "1":
-            return self.create_round()
+            if self.is_new_tournament():
+                return self.create_first_round()
+            else:
+                return self.create_round()
         if response == "2":
             return self.change_ranking()
         if response == "3":
@@ -252,62 +248,27 @@ class Controller:
         if response == "2":
             return self.main_menu()
 
-    def create_tournament(self):
+    def manage_tournament(self):
         """
-        Create tournamennt. Let the choice to quit the program before create or before end a round
+        Allow to create tournament if not already exist and first and other rounds
         """
-        new_tournament = Tournament.create_tournament()
-        serialized_tournament = vars(new_tournament)
-        self.tournament_table.insert(serialized_tournament)
-        self.add_players_to_tournament()
-        while self.tournament_table.all()[-1]["status_tournament"] != "finished":
-            quit_before_create_round = self.choice_create_next_round()
-            if quit_before_create_round is True:
-                break
-            quit_before_end_round = self.choice_end_round()
-            if quit_before_end_round is True:
-                break
-            for j in range(-4, 0):
-                self.update_scores(self.match_table.all()[j])
-            self.table.players_by_score()
-            if self.round_table.all()[-1]["current_round"] == 4:
-                self.end_tournament()
+        if (
+            Tournament.tournament_table_is_empty(self.tournament_table) is True
+            or Tournament.status_tournament_is_finished(self.tournament_table) is True
+        ):
+            new_tournament = Tournament.create_tournament()
+            serialized_tournament = vars(new_tournament)
+            self.tournament_table.insert(serialized_tournament)
+            self.add_players_to_tournament()
+            self.choice_create_next_round()
 
-    def continue_tournament(self):
-        """
-        Continue tournamennt (if one is pending).
-        Let the choice to quit the program before create or before end a round
-        """
-        while self.tournament_table.all()[-1]["status_tournament"] != "finished":
-            if (
-                self.round_table.all() == []
-                or self.round_table.all()[-1]["status_round"] == "finished"
-            ):
-                quit_before_create_round = self.choice_create_next_round()
-                if quit_before_create_round is True:
-                    break
-                quit_before_end_round = self.choice_end_round()
-                if quit_before_end_round is True:
-                    break
-                for j in range(-4, 0):
-                    self.update_scores(self.match_table.all()[j])
-                self.table.players_by_score()
-                if self.round_table.all()[-1]["current_round"] == 4:
-                    self.end_tournament()
-            else:
-                quit_before_end_round = self.choice_end_round()
-                if quit_before_end_round is True:
-                    break
-
-                for j in range(-4, 0):
-                    self.update_scores(self.match_table.all()[j])
-                self.table.players_by_score()
-                if self.round_table.all()[-1]["current_round"] == 4:
-                    self.end_tournament()
-                else:
-                    quit_before_create_round = self.choice_create_next_round()
-                    if quit_before_create_round is True:
-                        break
+        elif (
+            Tournament.tournament_table_is_empty(self.tournament_table) is not True
+            and self.round_table.all() == []
+        ) or self.round_table.all()[-1]["status_round"] == "finished":
+            self.choice_create_next_round()
+        else:
+            self.choice_end_round()
 
     def add_players_to_tournament(self):
         """
@@ -427,23 +388,6 @@ class Controller:
             contains_duplicates = self.check_same_ranking()
         self.change_ranking_menu()
 
-    def end_round(self):
-        """
-        End a round
-        """
-        self.round_table.update(
-            {"status_round": "finished"},
-            doc_ids=[self.round_table.all()[-1].doc_id],
-        )
-        self.round_table.update(
-            {
-                "end_date": json.dumps(
-                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
-                )
-            },
-            doc_ids=[self.round_table.all()[-1].doc_id],
-        )
-
     def is_new_tournament(self):
         """
         Check if a tournament is a new one
@@ -495,6 +439,63 @@ class Controller:
                 )
         return all_matchs
 
+    def end_round(self):
+        """
+        End a round by updating scores, and status_round and end sate of round table
+        """
+        for j in range(-4, 0):
+            self.update_scores(self.match_table.all()[j])
+        self.table.players_by_score()
+
+        self.round_table.update(
+            {"status_round": "finished"},
+            doc_ids=[self.round_table.all()[-1].doc_id],
+        )
+        self.round_table.update(
+            {
+                "end_date": json.dumps(
+                    datetime.now().strftime("%d/%m/%Y %H:%M:%S"), default=str
+                )
+            },
+            doc_ids=[self.round_table.all()[-1].doc_id],
+        )
+        if self.round_table.all()[-1]["current_round"] == 4:
+            self.end_tournament()
+        else:
+            return self.manage_tournament()
+
+    def create_first_round(self):
+        new_round = Round.create_round()
+        serialized_round = vars(new_round)
+        new_matchs_id = []
+        self.round_table.insert(serialized_round)
+        list_of_players_by_ranking = self.list_of_players_by_ranking()
+        Play = Query()
+        for i in range(4):
+            new_match = Match.create_match(
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_ranking[0][i]["ranking"]
+                ).doc_id,
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_ranking[1][i]["ranking"]
+                ).doc_id,
+            )
+            serialized_match = vars(new_match)
+            self.match_table.insert(serialized_match)
+            new_matchs_id.append(self.match_table.all()[-1].doc_id)
+        list_of_rounds = self.tournament_table.all()[-1]["rounds"]
+        list_of_rounds.append(self.round_table.all()[-1].doc_id)
+        self.round_table.update(
+            {"list_of_match": new_matchs_id},
+            doc_ids=[self.round_table.all()[-1].doc_id],
+        )
+        self.tournament_table.update(
+            {"rounds": list_of_rounds},
+            doc_ids=[self.tournament_table.all()[-1].doc_id],
+        )
+
+        return self.manage_tournament()
+
     def create_round(self):
         """
         Create a round. Update tournament and round table
@@ -502,73 +503,55 @@ class Controller:
         new_round = Round.create_round()
         serialized_round = vars(new_round)
         new_matchs_id = []
-        if self.is_new_tournament():
-            self.round_table.insert(serialized_round)
-            list_of_players_by_ranking = self.list_of_players_by_ranking()
-            Play = Query()
-            for i in range(4):
-                new_match = Match.create_match(
-                    self.player_table.get(
-                        Play.ranking == list_of_players_by_ranking[0][i]["ranking"]
-                    ).doc_id,
-                    self.player_table.get(
-                        Play.ranking == list_of_players_by_ranking[1][i]["ranking"]
-                    ).doc_id,
-                )
-                serialized_match = vars(new_match)
-                self.match_table.insert(serialized_match)
-                new_matchs_id.append(self.match_table.all()[-1].doc_id)
-        else:
-            serialized_round["current_round"] = (
-                self.round_table.all()[-1]["current_round"] + 1
-            )
-            serialized_round["name"] = "Round " + str(serialized_round["current_round"])
-            self.round_table.insert(serialized_round)
-            list_of_players_by_score = self.list_of_players_by_score()
-            all_matchs_of_a_tournament = self.list_of_all_matchs_of_a_tournament()
-            Play = Query()
-            j = 0
-            for _ in range(4):
-                k = 1
-                while self.is_match_already_play(
+        serialized_round["current_round"] = (
+            self.round_table.all()[-1]["current_round"] + 1
+        )
+        serialized_round["name"] = "Round " + str(serialized_round["current_round"])
+        self.round_table.insert(serialized_round)
+        list_of_players_by_score = self.list_of_players_by_score()
+        all_matchs_of_a_tournament = self.list_of_all_matchs_of_a_tournament()
+        Play = Query()
+        j = 0
+        for _ in range(4):
+            k = 1
+            while self.is_match_already_play(
+                all_matchs_of_a_tournament,
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_score[j]["ranking"]
+                ).doc_id,
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                ).doc_id,
+            ):
+                self.is_match_already_play(
                     all_matchs_of_a_tournament,
                     self.player_table.get(
                         Play.ranking == list_of_players_by_score[j]["ranking"]
                     ).doc_id,
                     self.player_table.get(
-                        Play.ranking == list_of_players_by_score[j + 1]["ranking"]
-                    ).doc_id,
-                ):
-                    self.is_match_already_play(
-                        all_matchs_of_a_tournament,
-                        self.player_table.get(
-                            Play.ranking == list_of_players_by_score[j]["ranking"]
-                        ).doc_id,
-                        self.player_table.get(
-                            Play.ranking
-                            == list_of_players_by_score[j + 1 + k]["ranking"]
-                        ).doc_id,
-                    )
-                    (
-                        list_of_players_by_score[j + 1],
-                        list_of_players_by_score[j + 1 + k],
-                    ) = (
-                        list_of_players_by_score[j + 1 + k],
-                        list_of_players_by_score[j + 1],
-                    )
-                    k += 1
-                new_match = Match.create_match(
-                    self.player_table.get(
-                        Play.ranking == list_of_players_by_score[j]["ranking"]
-                    ).doc_id,
-                    self.player_table.get(
-                        Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                        Play.ranking == list_of_players_by_score[j + 1 + k]["ranking"]
                     ).doc_id,
                 )
-                serialized_match = vars(new_match)
-                self.match_table.insert(serialized_match)
-                new_matchs_id.append(self.match_table.all()[-1].doc_id)
-                j += 2
+                (
+                    list_of_players_by_score[j + 1],
+                    list_of_players_by_score[j + 1 + k],
+                ) = (
+                    list_of_players_by_score[j + 1 + k],
+                    list_of_players_by_score[j + 1],
+                )
+                k += 1
+            new_match = Match.create_match(
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_score[j]["ranking"]
+                ).doc_id,
+                self.player_table.get(
+                    Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                ).doc_id,
+            )
+            serialized_match = vars(new_match)
+            self.match_table.insert(serialized_match)
+            new_matchs_id.append(self.match_table.all()[-1].doc_id)
+            j += 2
 
         list_of_rounds = self.tournament_table.all()[-1]["rounds"]
         list_of_rounds.append(self.round_table.all()[-1].doc_id)
@@ -582,6 +565,7 @@ class Controller:
         )
         self.warning.round_create(str(self.round_table.all()[-1]["current_round"]))
         self.table.matchs()
+        return self.manage_tournament()
 
     def choice_player_for_add_player_to_a_tournament(self):
         """
@@ -605,7 +589,7 @@ class Controller:
 
     def end_tournament(self):
         """
-        End a tournament
+        End a tournament by updating status and end date of tournament table and displaying winner
         """
         self.warning.tournament_winner()
         self.tournament_table.update(

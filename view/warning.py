@@ -13,29 +13,29 @@ class WarningView:
         self.player_table = player_table
 
     def welcome_message(self):
-        print("\n" "Welcome to Ultimate Chess Manager" "\n")
+        print("\n" "Welcome to Ultimate Chess Manager")
 
     def remaining_players_to_add(self, number_of_player):
         print("\n" + str(8 - number_of_player) + " players remaining\n")
 
     def add_a_player_several_time(self):
-        print("Player already choosen. Please add an other player\n")
+        print("\n Player already choosen. Please add an other player\n")
 
     def round_create(self, round_number):
-        print("Round " + str(round_number) + " has been created")
+        print("\n Round " + str(round_number) + " has been created")
 
     def players_same_ranking(self, new_ranking):
         print(
-            "At least 2 players have "
+            "\n At least 2 players have "
             + str(new_ranking)
             + " as ranking. Please modify ranking"
         )
 
     def no_tournament(self):
-        print("No tournament available")
+        print("\n No tournament available")
 
     def no_player(self):
-        print("No player available")
+        print("\n No player available")
 
     def tournament_winner(self):
         players_of_tournament_by_score = []
@@ -47,7 +47,7 @@ class WarningView:
             self, players_of_tournament
         )
         print(
-            "The winner is "
+            "\n The winner is "
             + players_of_tournament_by_score[0]["first_name"]
             + " "
             + players_of_tournament_by_score[0]["last_name"]
@@ -55,6 +55,6 @@ class WarningView:
 
     def quit(self):
         """
-        Display a thank you message when the user qui the program
+        Display a thank you message when the user quit the program
         """
         print("\nClosing the program...\n")

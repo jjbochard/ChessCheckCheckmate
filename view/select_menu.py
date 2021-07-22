@@ -27,7 +27,7 @@ class SelectMenuView:
                 "  4 - Display tournaments\n"
                 "  5 - Display players\n"
                 "  6 - Quit\n"
-                "  Your choice:"
+                "  Your choice: "
             )
         else:
             return input(
@@ -38,7 +38,7 @@ class SelectMenuView:
                 "  4 - Display tournaments\n"
                 "  5 - Display players\n"
                 "  6 - Quit\n"
-                "  Your choice:"
+                "  Your choice: "
             )
 
     def tournament_menu(self):
@@ -49,7 +49,7 @@ class SelectMenuView:
             "  4 - Change ranking\n"
             "  5 - Go to main menu\n"
             "  6 - Quit\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def next_round_menu(self):
@@ -58,7 +58,7 @@ class SelectMenuView:
             "  1 - Create next round\n"
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def end_round_menu(self):
@@ -71,7 +71,7 @@ class SelectMenuView:
             "\n"
             "  1 - Display players by ranking\n"
             "  2 - Display players by alphabetical order\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def players_by_ranking_menu(self):
@@ -80,7 +80,7 @@ class SelectMenuView:
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
             "  4 - Quit\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def players_by_alphabetical_order_menu(self):
@@ -89,7 +89,7 @@ class SelectMenuView:
             "  2 - Change ranking\n"
             "  3 - Go to main menu\n"
             "  4 - Quit\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def ranking_menu(self):
@@ -98,7 +98,7 @@ class SelectMenuView:
             "\nWhat do you want to do :\n"
             "  1 - Change ranking\n"
             "  2 - Go to main menu\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def players_menu(self):
@@ -108,7 +108,7 @@ class SelectMenuView:
             "  3 - Change ranking\n"
             "  4 - Go to main menu\n"
             "  5 - Quit\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def write_score_menu(self, match):
@@ -126,7 +126,7 @@ class SelectMenuView:
             + self.player_table.get(doc_id=match["player_2"])["last_name"]
             + " win\n"
             "  3 - Draw match\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def add_player_create_tournament_menu(self):
@@ -134,7 +134,7 @@ class SelectMenuView:
             "\n  1 - Add existed players\n"
             "  2 - Add a new player\n"
             "  3 - Change ranking\n"
-            "  Your choice:"
+            "  Your choice: "
         )
 
     def change_ranking(self):

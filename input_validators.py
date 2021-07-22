@@ -61,7 +61,7 @@ def is_valid_add_player_create_tournament_menu_response(response):
 
 
 def is_valid_time_control(response):
-    if response not in ["Blitz", "Bullet", "Rapid"]:
+    if response not in ["Blitz", "Bullet", "Rapid", "A"]:
         print("  Time control must be Blitz, Bullet or Rapid")
     else:
         return True
