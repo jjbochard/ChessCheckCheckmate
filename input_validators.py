@@ -133,3 +133,8 @@ def is_valid_date_of_birth():
                 "  Incorrect format given for dates. They must be given like 'yyyy-mm-dd'"
             )
     return date_of_birth
+
+
+def is_valid_end_tournament_menu_response(response):
+    if response in ["1", "2", "3"]:
+        return True

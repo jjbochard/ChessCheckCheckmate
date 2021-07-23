@@ -137,6 +137,14 @@ class SelectMenuView:
             "  Your choice: "
         )
 
+    def end_tournament_menu(self):
+        return input(
+            "\n  1 - Change ranking\n"
+            "  2 - Go to main menu\n"
+            "  3 - Quit\n"
+            "  Your choice: "
+        )
+
     def change_ranking(self):
         return input("For which player do you want to change ranking (choose an id): ")
 

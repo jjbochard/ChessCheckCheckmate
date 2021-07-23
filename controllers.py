@@ -77,6 +77,21 @@ class Controller:
         if response == "6":
             return self.quit()
 
+    def end_tournament_menu(self):
+        """
+        Display end round manu
+        """
+        while True:
+            response = self.select.end_tournament_menu()
+            if input_validators.is_valid_end_tournament_menu_response(response):
+                break
+        if response == "1":
+            return self.change_ranking()
+        if response == "2":
+            return self.main_menu()
+        if response == "3":
+            return self.quit()
+
     def choice_tournament_for_print_players(self):
         """
         Display a menu to choice wich manner to display players for a tournament
@@ -609,7 +624,7 @@ class Controller:
             {"status_tournament": "finished"},
             doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
-        self.quit()
+        self.end_tournament_menu()
 
     def quit(self):
         """
