@@ -496,6 +496,8 @@ class Controller:
             {"rounds": list_of_rounds},
             doc_ids=[self.tournament_table.all()[-1].doc_id],
         )
+        self.warning.round_create(str(self.round_table.all()[-1]["current_round"]))
+        self.table.matchs()
 
         return self.manage_tournament()
 
