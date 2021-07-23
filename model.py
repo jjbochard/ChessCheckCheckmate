@@ -80,7 +80,7 @@ class Player:
         while True:
             first_name = input("First name : ").capitalize()
             last_name = input("Last_name : ").capitalize()
-            date_of_birth = input_validators.is__valid_date_of_birth()
+            date_of_birth = input_validators.is_valid_date_of_birth()
             if input_validators.is_not_already_added_player(
                 first_name, last_name, date_of_birth
             ):

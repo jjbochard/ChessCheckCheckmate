@@ -61,7 +61,7 @@ def is_valid_add_player_create_tournament_menu_response(response):
 
 
 def is_valid_time_control(response):
-    if response not in ["Blitz", "Bullet", "Rapid", "A"]:
+    if response not in ["Blitz", "Bullet", "Rapid"]:
         print("  Time control must be Blitz, Bullet or Rapid")
     else:
         return True
@@ -122,7 +122,7 @@ def is_not_already_added_player(
             return True
 
 
-def is__valid_date_of_birth():
+def is_valid_date_of_birth():
     while True:
         try:
             date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")

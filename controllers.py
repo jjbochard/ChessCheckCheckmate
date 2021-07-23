@@ -289,6 +289,9 @@ class Controller:
                 ):
                     break
             if response == "1":
+                if not self.player_table or list_of_remaining_players == []:
+                    self.warning.no_player()
+                    continue
                 while True:
                     existed_player_id = int(
                         self.choice_player_for_add_player_to_a_tournament()
