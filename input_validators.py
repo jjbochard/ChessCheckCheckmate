@@ -125,12 +125,12 @@ def is_not_already_added_player(
 def is_valid_date_of_birth():
     while True:
         try:
-            date_of_birth = input("Date_of_birth (yyyy/mm/dd): ")
-            datetime.strptime(date_of_birth, "%Y-%m-%d")
+            date_of_birth = input("Date_of_birth (dd/mm/yyyy): ")
+            datetime.strptime(date_of_birth, "%d/%m/%Y")
             break
         except ValueError:
             print(
-                "  Incorrect format given for dates. They must be given like 'yyyy-mm-dd'"
+                "  Incorrect format given for dates. They must be given like 'dd/mm/yyyy'"
             )
     return date_of_birth
 
