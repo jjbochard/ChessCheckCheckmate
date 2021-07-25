@@ -516,6 +516,28 @@ class Controller:
 
         return self.manage_tournament()
 
+    def is_permuted_match_existed(
+        self, list_all_matchs, list_sorted_players, ind_1, ind_2
+    ):
+        """
+        Check if a permuted match has already been played.
+        Args:
+            list_all_matchs (list): list of all matchs already played in the tournament
+            list_sorted_players (list): list of players sorted by score
+            ind_1 (int): index of the player 1 to permute
+            ind_2 (int): index of the player 2 to permute
+        """
+
+        if (
+            self.is_match_already_play(
+                list_all_matchs,
+                list_sorted_players[ind_1].doc_id,
+                list_sorted_players[ind_2].doc_id,
+            )
+            is True
+        ):
+            return True
+
     def create_round(self):
         """
         Create a round. Update tournament and round table
@@ -531,47 +553,303 @@ class Controller:
         list_of_players_by_score = self.list_of_players_by_score()
         all_matchs_of_a_tournament = self.list_of_all_matchs_of_a_tournament()
         Play = Query()
+        list_matchs = []
         j = 0
-        for _ in range(4):
-            k = 1
-            while self.is_match_already_play(
-                all_matchs_of_a_tournament,
-                self.player_table.get(
-                    Play.ranking == list_of_players_by_score[j]["ranking"]
-                ).doc_id,
-                self.player_table.get(
-                    Play.ranking == list_of_players_by_score[j + 1]["ranking"]
-                ).doc_id,
-            ):
-                self.is_match_already_play(
+
+        try:
+            for _ in range(4):
+                k = 1
+                while self.is_match_already_play(
                     all_matchs_of_a_tournament,
                     self.player_table.get(
                         Play.ranking == list_of_players_by_score[j]["ranking"]
                     ).doc_id,
                     self.player_table.get(
-                        Play.ranking == list_of_players_by_score[j + 1 + k]["ranking"]
+                        Play.ranking == list_of_players_by_score[j + 1]["ranking"]
                     ).doc_id,
+                ):
+                    self.is_match_already_play(
+                        all_matchs_of_a_tournament,
+                        self.player_table.get(
+                            Play.ranking == list_of_players_by_score[j]["ranking"]
+                        ).doc_id,
+                        self.player_table.get(
+                            Play.ranking
+                            == list_of_players_by_score[j + 1 + k]["ranking"]
+                        ).doc_id,
+                    )
+                    (
+                        list_of_players_by_score[j + 1],
+                        list_of_players_by_score[j + 1 + k],
+                    ) = (
+                        list_of_players_by_score[j + 1 + k],
+                        list_of_players_by_score[j + 1],
+                    )
+                    k += 1
+                list_matchs.append(
+                    (
+                        self.player_table.get(
+                            Play.ranking == list_of_players_by_score[j]["ranking"]
+                        ).doc_id,
+                        self.player_table.get(
+                            Play.ranking == list_of_players_by_score[j + 1]["ranking"]
+                        ).doc_id,
+                    )
                 )
-                (
-                    list_of_players_by_score[j + 1],
-                    list_of_players_by_score[j + 1 + k],
-                ) = (
-                    list_of_players_by_score[j + 1 + k],
-                    list_of_players_by_score[j + 1],
+                j += 2
+        except IndexError:
+            list_matchs.pop(-1)
+            if (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -3
                 )
-                k += 1
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -4
+                )
+                is not True
+            ):
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-3].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -4
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -3
+                )
+                is not True
+            ):
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-3].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -3
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -4, -6
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-3].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-4].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -4
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -3, -6
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-3].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -3
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -4, -6
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-3].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-4].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -4
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -3, -6
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-3].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -6
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -3, -4
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-3].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+            elif (
+                self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -1, -6
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -2, -5
+                )
+                is not True
+                and self.is_permuted_match_existed(
+                    all_matchs_of_a_tournament, list_of_players_by_score, -3, -4
+                )
+                is not True
+            ):
+                list_matchs.pop(-1)
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-1].doc_id,
+                        list_of_players_by_score[-6].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-2].doc_id,
+                        list_of_players_by_score[-5].doc_id,
+                    )
+                )
+                list_matchs.append(
+                    (
+                        list_of_players_by_score[-3].doc_id,
+                        list_of_players_by_score[-4].doc_id,
+                    )
+                )
+
+        for match in list_matchs:
             new_match = Match.create_match(
-                self.player_table.get(
-                    Play.ranking == list_of_players_by_score[j]["ranking"]
-                ).doc_id,
-                self.player_table.get(
-                    Play.ranking == list_of_players_by_score[j + 1]["ranking"]
-                ).doc_id,
+                match[0],
+                match[1],
             )
             serialized_match = vars(new_match)
             self.match_table.insert(serialized_match)
             new_matchs_id.append(self.match_table.all()[-1].doc_id)
-            j += 2
 
         list_of_rounds = self.tournament_table.all()[-1]["rounds"]
         list_of_rounds.append(self.round_table.all()[-1].doc_id)
