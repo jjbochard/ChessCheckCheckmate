@@ -66,6 +66,9 @@ You can install the configured pre commit hook with
 To start the program, use :
 
     python ucm.py
+
+In this programm you can :
+
 * Manage tournament
   + Create a tournament
     - enter the informations of the tournament
@@ -85,3 +88,9 @@ To start the program, use :
   + About matchs
 
 ## Possible improvements
+
+* before starting coding, think about packages to use. Here I could use one which is better for display menu and taking user input.
+
+* sometimes, the last match of the last round has already been played. I try to respect as much as possible the Swiss System and favorise the last player by creating 2 other matchs with the last 4 players of the tournament. If all the potential matchs have already been played, I create 3 other matchs with the last 6 players.
+
+* divise the controllers file in other smaller files for better readness.
