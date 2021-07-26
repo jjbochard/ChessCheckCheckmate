@@ -122,6 +122,23 @@ def is_not_already_added_player(
             return True
 
 
+def is_tournament_already_exist(tournament_name_response):
+    list_tournament = Tournament.get_tournament_name(
+        TinyDB("db.json").table("tournament")
+    )
+    new_tournament_name = tournament_name_response
+    if list_tournament == []:
+        return True
+    for tournament_name in list_tournament:
+        if (
+            Tournament.check_tournament_duplicate(new_tournament_name, tournament_name)
+            is True
+        ):
+            print("  Tournament already exists")
+        else:
+            return True
+
+
 def is_valid_date_of_birth():
     while True:
         try:

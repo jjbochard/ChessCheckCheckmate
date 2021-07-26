@@ -33,7 +33,10 @@ class Tournament:
 
     @classmethod
     def create_tournament(cls):
-        name = input("Name: ").capitalize()
+        while True:
+            name = input("Name: ").capitalize()
+            if input_validators.is_tournament_already_exist(name):
+                break
         place = input("Place: ").capitalize()
         while True:
             time_control = input("Time control (Biltz, Bullet or Rapid): ").capitalize()
@@ -62,6 +65,15 @@ class Tournament:
             tournament = str(tournament.doc_id)
             list_tournaments.append(tournament)
         return list_tournaments
+
+    @staticmethod
+    def get_tournament_name(table):
+        return [tournament["name"] for tournament in table]
+
+    @staticmethod
+    def check_tournament_duplicate(tournament_name_one, tournament_name_two):
+        if tournament_name_one == tournament_name_two:
+            return True
 
 
 class Player:
