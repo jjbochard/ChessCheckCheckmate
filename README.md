@@ -67,6 +67,12 @@ To start the program, use :
 
     python ucm.py
 
++ Create HTML file generate by flake8-html
+
+To create this file, use :
+
+    flake8 --format=html --htmldir=flake8_rapport --exclude=env/
+
 In this programm you can :
 
 * Manage tournament
