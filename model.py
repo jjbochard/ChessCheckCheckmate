@@ -115,6 +115,23 @@ class Player:
             list_players.append(player)
         return list_players
 
+    def read_players(self):
+
+        players = [
+            [
+                player["ranking"],
+                player.doc_id,
+                player["last_name"],
+                player["first_name"],
+                player["date_of_birth"],
+                player["gender"],
+            ]
+            for player in self.player_table
+        ]
+
+        players = sorted(players)
+        return players
+
     @staticmethod
     def get_rankings(table):
         return [player["ranking"] for player in table]

@@ -180,7 +180,8 @@ class Controller:
         """
         Display players by ranking table
         """
-        response = self.table.players_by_ranking()
+        players = Player.read_players(self)
+        response = self.table.players_by_ranking(players)
         while True:
             response = self.select.players_by_ranking_menu()
             if input_validators.is_valid_players_by_ranking_menu_response(response):

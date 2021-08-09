@@ -15,19 +15,8 @@ class TablesView:
         self.round_table = round_table
         self.match_table = match_table
 
-    def players_by_ranking(self):
+    def players_by_ranking(self, players):
         """ """
-        players = [
-            [
-                player["ranking"],
-                player.doc_id,
-                player["last_name"],
-                player["first_name"],
-                player["date_of_birth"],
-                player["gender"],
-            ]
-            for player in self.player_table
-        ]
         players = sorted(players)
         print(
             tabulate(
