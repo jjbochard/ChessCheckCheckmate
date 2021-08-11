@@ -1,4 +1,4 @@
-from controllers import Controller
+from controller import Controller
 from view.select_menu import SelectMenuView
 from view.tables import TablesView
 from view.warning import WarningView

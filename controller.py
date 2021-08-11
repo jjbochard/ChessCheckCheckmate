@@ -5,7 +5,10 @@ from datetime import datetime
 from tinydb import Query, TinyDB
 
 import input_validators
-from model import Match, Player, Round, Tournament
+from model.match import Match
+from model.player import Player
+from model.round import Round
+from model.tournament import Tournament
 
 
 class Controller:

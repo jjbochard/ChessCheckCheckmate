@@ -1,6 +1,6 @@
 from tinydb import TinyDB
 
-from model import Player
+from model.player import Player
 
 
 class WarningView:

@@ -2,7 +2,8 @@ from datetime import datetime
 
 from tinydb import TinyDB
 
-from model import Player, Tournament
+from model.player import Player
+from model.tournament import Tournament
 
 
 def is_valid_main_menu_response(response):
